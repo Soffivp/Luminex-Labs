@@ -9,7 +9,11 @@
 
 <h1 align="center">¿Quiénes Somos?</h1>
 
-Somos una empresa que impulsa la evolución digital mediante soluciones tecnológicas que simplifiquen la complejidad, potencien la innovación y generen impacto real en las organizaciones y en la sociedad, combinando tecnología, ética y visión humana. Nuestro equipo multidisciplinario trabaja con pasión por la excelencia, desarrollando software, aplicaciones y sistemas que integran creatividad, seguridad y escalabilidad.
+En Luminex Labs impulsamos la evolución digital mediante soluciones tecnológicas que simplifican la complejidad, potencian la innovación y generan un impacto real en las organizaciones y en la sociedad.
+Combinamos tecnología, ética y visión humana para crear software, aplicaciones y sistemas que integran creatividad, seguridad y escalabilidad.
+
+Nuestro equipo multidisciplinario trabaja con pasión por la excelencia, aplicando prácticas DevOps y metodologías de Integración y Entrega Continua (CI/CD) que garantizan eficiencia, calidad y agilidad en cada desarrollo.
+Somos especialistas en arquitecturas nativas en la nube, diseñadas para optimizar recursos, asegurar rendimiento y promover soluciones sostenibles que evolucionan junto a las necesidades del entorno digital.
 
 <h2>Misión</h2>
 Desarrollamos soluciones de software y aplicaciones móviles cloud-native que impulsan la transformación digital de las empresas. Apostamos por la innovación continua, la eficiencia técnica y un enfoque humano, creando sistemas sostenibles, escalables y alineados con los objetivos estratégicos de cada cliente.
@@ -31,9 +35,12 @@ Desarrollamos soluciones de software y aplicaciones móviles cloud-native que im
   <li>Coordinar procesos de transición entre empresas con beneficio mutuo</li>
 </ul>
 
-
-
-
 Las empresas asociadas a la Cámara de Industrias de Loja enfrentan una problemática compleja y multidimensional en la gestión del talento humano que compromete tanto la sostenibilidad empresarial como el bienestar de los trabajadores. Esta situación se caracteriza por la convergencia de tres factores críticos que operan de manera interrelacionada: la desvinculación forzada de empleados con estabilidad laboral reforzada, la asimetría de información en el mercado laboral local, y la ausencia de mecanismos formales para compartir información verificable sobre desempeño laboral.
 
+<h1 align="center">Problemática Nahomi</h1>
 
+La Cámara de Industrias de Loja (CAIL) enfrenta una dificultad común entre sus empresas afiliadas: cuando un empleado culmina su relación laboral —por jubilación, reestructuración o reducción de personal—, su experiencia y talento quedan desaprovechados. A su vez, otras empresas que requieren personal calificado desconocen la existencia de estos perfiles, lo que genera una pérdida de capital humano y un aumento en los costos de contratación e indemnización.
+
+Actualmente, no existe una herramienta digital que facilite la gestión, transferencia y visibilidad de empleados entre las distintas empresas. Esta falta de conectividad impide optimizar la rotación laboral y promover la empleabilidad de personas con distintos niveles de experiencia.
+
+Por ello, surge la necesidad de desarrollar una plataforma móvil de bolsa de empleados que permita a las empresas publicar y compartir los perfiles de sus trabajadores disponibles, fomentando la movilidad laboral, reduciendo costos y fortaleciendo el aprovechamiento del talento humano dentro del sector industrial.
