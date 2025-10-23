@@ -22,6 +22,7 @@ Desarrollamos soluciones de software y aplicaciones móviles cloud-native que im
 <img width="982" height="656" alt="equipo" src="https://github.com/user-attachments/assets/4c89fc17-9fee-42e1-a0fe-e9c12bb00f31" />
 
 <h2 align="center">Proyecto: Aplicación Bolsa de Empleados Conjunta - Cámara de Industrias de Loja</h2>
+<h2>Objetivos del </h2>
 <h2>Objetivos del proyecto</h2>
 
 <ul>
