@@ -21,7 +21,18 @@ Desarrollamos soluciones de software y aplicaciones móviles cloud-native que im
 
 <img width="982" height="656" alt="equipo" src="https://github.com/user-attachments/assets/4c89fc17-9fee-42e1-a0fe-e9c12bb00f31" />
 
+<h2 align="center">Proyecto: Aplicación Bolsa de Empleados Conjunta - Cámara de Industrias de Loja</h2>
+<h2>Objetivos del proyecto</h2>
+
+<ul>
+  <li>Publicar perfiles de empleados que deseen ser reubicados</li>
+  <li>Facilitar la búsqueda y filtrado de talento experimentado por sector, cargo y competencias</li>
+  <li>Coordinar procesos de transición entre empresas con beneficio mutuo</li>
+</ul>
 
 
+
+
+Las empresas asociadas a la Cámara de Industrias de Loja enfrentan una problemática compleja y multidimensional en la gestión del talento humano que compromete tanto la sostenibilidad empresarial como el bienestar de los trabajadores. Esta situación se caracteriza por la convergencia de tres factores críticos que operan de manera interrelacionada: la desvinculación forzada de empleados con estabilidad laboral reforzada, la asimetría de información en el mercado laboral local, y la ausencia de mecanismos formales para compartir información verificable sobre desempeño laboral.
 
 
