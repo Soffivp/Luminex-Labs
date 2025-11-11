@@ -41,11 +41,6 @@ Desarrollar una aplicacion movil que gestione los perfiles de los empleados de a
   <li>Coordinar procesos de transición entre empresas con beneficio mutuo</li>
 </ul>
 
-<h2>Prototipo</h2>
-<p align="center">
-<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/FxdCkZqUU6dsv044tI9HRv/Bolsa-empleados-CAIL?node-id=63-95&embed-host=share" allowfullscreen></iframe>
-</p>
-
 <h2> Prototipo en figma </h2>
 
 <p align="center">
