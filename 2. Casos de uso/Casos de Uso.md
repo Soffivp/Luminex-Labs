@@ -8,6 +8,39 @@
 
 **Fecha:** 05 de noviembre del 2025  
 
+<h3>DEFINICIÓN CASOS DE USO</h3>
+<p>Un diagrama de casos de uso es una representación gráfica empleada en el modelado de sistemas para describir las interacciones entre los actores (usuarios, sistemas externos u otros componentes) y las funcionalidades principales que ofrece un sistema. Este tipo de diagrama, basado en el estándar UML (Lenguaje Unificado de Modelado), se utiliza para documentar qué hace el sistema desde la perspectiva de los usuarios, sin entrar en detalles sobre cómo se implementa.</p>
+
+<h3>¿Para qué sirve un diagrama de casos de uso?</h3>
+<p>El diagrama de casos de uso es una herramienta clave para el desarrollo y documentación de sistemas, ya que permite:
+
+1. Especificar requisitos funcionales: Identificar y detallar las funcionalidades principales que debe cumplir el sistema.
+2. Facilitar la comunicación: Servir como un medio común entre los interesados, desarrolladores y analistas para garantizar la comprensión de los requisitos.
+3. Definir el alcance del sistema: Determinar los límites del sistema, especificando qué incluye y qué excluye.
+4. Identificar actores clave: Describir quiénes interactuarán con el sistema, ya sean usuarios humanos o sistemas externos.
+5. Priorizar funcionalidades: Ayudar a evaluar y clasificar las funcionalidades en función de su importancia o impacto para los usuarios. 
+</p>
+<h3>Estructura de un diagrama de casos de uso</h3>
+
+1. Actores
+
+    - Representan las entidades externas que interactúan con el sistema.
+    - Pueden ser personas, organizaciones o sistemas.
+    - Se representan gráficamente como una figura humana o una etiqueta que los identifica.
+    - Ejemplo: Usuario, Administrador, Sistema Externo.
+2. Casos de uso
+    - Representan las funcionalidades o servicios específicos que el sistema proporciona a los actores.
+    - Se representan como óvalos con un nombre que describe la acción.
+    - Ejemplo: Registrar Usuario, Generar Informe, Procesar Pago.
+3. Relaciones:
+    - Asociación: Representa la interacción entre un actor y un caso de uso (línea sólida).
+    - Inclusión (<< include >>): Indica que un caso de uso incluye la funcionalidad de otro, generalmente        para evitar redundancia.
+    - Extensión (<< extend >>): Señala un caso de uso opcional que extiende la funcionalidad de otro             principal, dependiendo de ciertas condiciones.
+    - Generalización: Define relaciones de herencia entre actores o entre casos de uso.
+4. Sistema:
+    - Representa los límites del sistema modelado.
+    - Se ilustra como un rectángulo que contiene los casos de uso.
+
 <h3>Actores del Sitema</h3>
 
 | Actor | Descripción |
@@ -23,7 +56,9 @@
 <h3>Justificación de Casos de Uso</h3>
 
 <h3>Módulo 1: Registro y Gestión de Perfiles</h3>
-
+<p align="center">
+<img width="410" height="269" alt="image" src="https://github.com/user-attachments/assets/0680108d-4267-4923-9e2a-e4382fae8501" />
+</p>
 
 | Campo | Descripción |
 |-------|-------------|
@@ -36,6 +71,10 @@
 | **Postcondiciones** | • La empresa queda registrada y activa<br>• La empresa recibe credenciales de acceso<br>• El administrador es notificado del registro exitoso |
 | **Flujo Principal** | 1. El administrador registra una nueva empresa<br>2. El administrador ingresa el RUC de la empresa en CAIL<br>3. CAIL solicita validación del RUC al SRI<br>4. SRI valida y retorna datos básicos de la empresa<br>5. El administrador registra los datos generales de la empresa (razón social, dirección, teléfono, email, sector industrial).<br>6. El administrador confirma el registro de la empresa<br>7. CAIL asigna credenciales de acceso para la empresa<br>8. Empresa recibe credenciales proporcionadas por CAIL<br>9. CAIL confirma el registro exitoso al administrador |
 | **Reglas de Negocio** | • RN-001: El RUC debe ser válido y estar activo en el SRI<br>• RN-002: Una empresa solo puede registrarse una vez<br>• RN-004: El email de la empresa debe ser único |
+
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/7fd5efe0-0fab-4a4d-ab1b-0cebb23fea3b" />
+</p>
 
 | Campo | Descripción |
 |-------|-------------|
@@ -51,6 +90,10 @@
 
 <h3>Módulo 2: Clasificación De Efectividad Laboral</h3>
 
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/7fd5efe0-0fab-4a4d-ab1b-0cebb23fea3b" />
+</p>
+
 | Campo | Descripción |
 |-------|-------------|
 | **ID** | CU-003 |
@@ -63,6 +106,10 @@
 | **Postcondiciones** | • Se obtiene un puntaje de efectividad laboral<br>• Se genera un informe detallado de ponderación<br>• El informe queda registrado |
 | **Flujo Principal** | 1. CAIL recibe los datos completos del empleado<br>2. CAIL evalúa los logros empresariales registrados (premios, reconocimientos, proyectos exitosos)<br>3. CAIL evalúa las certificaciones obtenidas (cantidad, relevancia, vigencia)<br>4. CAIL evalúa la actitud laboral (evaluaciones previas, sanciones, llamados de atención)<br>5. CAIL evalúa la antigüedad en la empresa (años completos de servicio)<br>6. CAIL evalúa el nivel de titulación académica (bachiller, técnico, tecnólogo, tercer nivel, cuarto nivel)<br>7. CAIL aplica los pesos ponderados a cada criterio<br>8. CAIL asigna el puntaje global de efectividad (escala 0-100)<br>9. CAIL determina el nivel laboral del empleado<br>10. CAIL devuelve el informe de ponderación<br>11. CAIL almacena la evaluación en el historial del empleado |
 | **Reglas de Negocio** | • RN-009: Logros empresariales: peso 20%<br>• RN-010: Certificaciones: peso 15%<br>• RN-011: Actitud laboral: peso 25%<br>• RN-012: Antigüedad: peso 25%<br>• RN-013: Titulación: peso 15%<br>• RN-014: Puntaje mínimo para publicación: 50 puntos |
+
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/7fd5efe0-0fab-4a4d-ab1b-0cebb23fea3b" />
+</p>
 
 | Campo | Descripción |
 |-------|-------------|
@@ -78,6 +125,10 @@
 | **Reglas de Negocio** | • RN-015: Junior: 0-3 años de experiencia<br>• RN-016: Mid-Level: 4-8 años de experiencia<br>• RN-017: Senior: más de 8 años de experiencia |
 
 <h3>Módulo 3: Generación De Informes De Ponderación</h3>
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/161d8f3f-70c4-4ec9-888a-c7db51c5d01f" />
+</p>
+
 
 | Campo | Descripción |
 |-------|-------------|
@@ -120,6 +171,10 @@
 
 <h3>Módulo 4: Colocación Laboral</h3>
 
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/d4f9585d-e12f-4845-839e-06a0cd5bc7e1" />
+</p>
+
 | Campo | Descripción |
 |-------|-------------|
 | **ID** | CU-008 |
@@ -148,6 +203,10 @@
 
 <h3>Módulo 5: De Matching</h3>
 
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/36ff2561-8b47-4ac7-a2bd-9cb8d3de2542" />
+</p>
+
 | Campo | Descripción |
 |-------|-------------|
 | **ID** | CU-010 |
@@ -160,6 +219,10 @@
 | **Postcondiciones** | • Se generan sugerencias de matching para todas las vacantes activas<br>• Las empresas receptoras son notificadas sobre nuevas coincidencias<br>• Se actualiza el registro de matching |
 | **Flujo Principal** | 1. El administrador empieza a buscar vacantes en CAIL<br>2. CAIL recopila todas las vacantes activas<br>3. CAIL recopila todos los empleados disponibles<br>4. CAIL compara competencias requeridas vs competencias del empleado<br>5. CAIL compara nivel laboral requerido vs nivel del empleado<br>6. CAIL revisa el porcentaje de coincidencia para cada par vacante-empleado<br>7. CAIL registra una lista de coincidencias con score mayor al 60%<br>8. CAIL ordena las coincidencias por score de mayor a menor<br>9. CAIL actualiza las recomendaciones en cada vacante<br>10. CAIL muestra a empresas receptoras sobre nuevos candidatos sugeridos<br>11. CAIL registra seguimiento de cada empleado<br>12. CAIL presenta reporte de coincidencias al administrador |
 | **Reglas de Negocio** | • RN-031: El matching se ejecuta automáticamente cada 24 horas<br>• RN-032: El administrador puede ejecutar matching manual en cualquier momento<br>• RN-033: Score mínimo de matching: 60%<br>• RN-034: Se priorizan empleados con mayor puntaje de efectividad |
+
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/5641bb72-84bf-4b86-b2ec-eca3e30aab9c" />
+</p>
 
 | Campo | Descripción |
 |-------|-------------|
@@ -176,6 +239,10 @@
 
 <h3>Módulo 6: Cumplimiento Del Proceso Laboral</h3>
 
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/5641bb72-84bf-4b86-b2ec-eca3e30aab9c" />
+</p>
+
 | Campo | Descripción |
 |-------|-------------|
 | **ID** | CU-012 |
@@ -190,6 +257,10 @@
 | **Reglas de Negocio** | • RN-041: Todo acuerdo debe ser confirmado por ambas empresas<br>• RN-042: La documentación debe incluir mínimo: contrato firmado y anexos laborales<br>• RN-043: El administrador tiene hasta 3 días hábiles para validar documentación<br>• RN-044: Si la documentación es rechazada, el proceso vuelve a negociación<br>• RN-045: El expediente es inmutable una vez generado<br>• RN-046: Todas las comunicaciones deben quedar registradas |
 
 <h3>Módulo 7: Monetización Y Analítica De Resultados</h3>
+
+<p align="center">
+<img alt="image" src="https://github.com/user-attachments/assets/ad30539a-b1ca-49ce-8446-4f8f06e5e726" />
+</p>
 
 | Campo | Descripción |
 |-------|-------------|
