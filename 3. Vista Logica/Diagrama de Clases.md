@@ -65,8 +65,7 @@ Información General
 | Nombre | Empresa|
 | Tipo |  Clase abstracta (tiene subclases: EmpresaEmisora, EmpresaReceptora)|
 | Paquete/Módulo | core.entities |
-| Descripción |  Representa una empresa afiliada a CAIL que puede actuar como emisora (ofrece empleados) o receptora (busca empleados)
-|
+| Descripción |  Representa una empresa afiliada a CAIL que puede actuar como emisora (ofrece empleados) o receptora (busca empleados)|
 
 <h3>Atributos</h3>
 
