@@ -55,7 +55,7 @@
 
 <h3>Módulo 1: Registro y Gestión de Perfiles</h3>
 <p align="center">
-<img width="410" height="269" alt="image" src="https://github.com/user-attachments/assets/0680108d-4267-4923-9e2a-e4382fae8501" />
+<img alt="image" src="https://github.com/user-attachments/assets/0680108d-4267-4923-9e2a-e4382fae8501" />
 </p>
 
 | Campo | Descripción |
