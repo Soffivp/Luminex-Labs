@@ -35,8 +35,9 @@ Representadas como rectángulos divididos en tres secciones:
 
 <h2>Diagrama de Clases</h2>
 <p>
-<img width="13875" height="3077" alt="Casos de uso - CAIL" src="https://github.com/user-attachments/assets/60634dc0-78a3-4a41-b3ea-dfaeb25fb77e" />
+<img width="13875" height="3077" alt="Casos de uso - CAIL" src="https://github.com/user-attachments/assets/78913fdb-6e72-4ad4-bdfe-f7846ae27287" />
 </p>
+
 
 <h2>Diccionario de Clases</h2>
 
