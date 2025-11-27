@@ -1,16 +1,20 @@
 # Mapa de Capacidades
 
 <p align="center">
-<img width="2294" height="646" alt="cap-1" src="https://github.com/user-attachments/assets/63a7a1dc-7b4b-4648-9a32-48d172465b5c" />
+<img width="1610" height="1870" alt="cap1" src="https://github.com/user-attachments/assets/c528b581-ff9b-4729-8609-580c3859d292" />
 </p>
 
-<p align="center">
-<img width="2303" height="646" alt="cap-2" src="https://github.com/user-attachments/assets/18b51eef-e2d1-464c-a797-2d55a7ac048c" />
-</p>
 
 <p align="center">
-<img width="3070" height="646" alt="cap-3" src="https://github.com/user-attachments/assets/19b60878-cb0c-4d6a-9039-836821fbadf7" />
+<img width="955" height="1870" alt="cap2" src="https://github.com/user-attachments/assets/2581b133-adc4-4822-ab19-10bd4f1bd695" />
+</p>
+
+
+<p align="center">
+<img width="1054" height="1870" alt="cap3" src="https://github.com/user-attachments/assets/165ee31c-8d8c-4d62-aa70-6d1810515354" />
 </p>
 <p align="center">
-<img width="2298" height="646" alt="cap-4" src="https://github.com/user-attachments/assets/05e04a42-4e02-481c-b7fb-ef9086d38287" />
+<img width="1061" height="1870" alt="cap4" src="https://github.com/user-attachments/assets/7ad2b6c9-6173-4d6b-84b8-7a1f1a50220f" />
 </p>
+
+
