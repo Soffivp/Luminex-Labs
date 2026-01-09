@@ -1,0 +1,49 @@
+# Dependencias de Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+.desktop
+
+# Builds y salida de compilación
+dist/
+build/
+.out/
+# Firebase / Google credentials
+serviceAccountKey.json
+database/firestore/serviceAccountKey.json
+
+# Archivos de entorno y credenciales (¡MUY IMPORTANTE!)
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+config/
+config/*.json
+# Archivos temporales de editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Cache
+.npm
+.eslintcache
+.node_repl_history
+
+# Opcional: si usas TypeScript
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+.pnpm-store/
