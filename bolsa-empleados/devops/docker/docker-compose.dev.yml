@@ -1,0 +1,310 @@
+# devops/docker/docker-compose.dev.yml
+version: '3.8'
+
+services:
+  # ==========================================
+  # API Gateway - Nginx
+  # ==========================================
+  nginx:
+    build: 
+      context: ../../backend/nginx
+      dockerfile: Dockerfile
+    container_name: bolsa-nginx-dev
+    ports:
+      - "8080:80"
+    depends_on:
+      autenticacion-service:
+        condition: service_healthy
+      sri-service:
+        condition: service_started
+      registrocivil-service:
+        condition: service_started
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    volumes:
+      - ../../backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    environment:
+      - TZ=America/Guayaquil
+
+  # ==========================================
+  # Servicio de Autenticación
+  # ==========================================
+  autenticacion-service:
+    build:
+      context: ../../backend/services/autenticacion
+      dockerfile: Dockerfile
+      target: development
+    container_name: bolsa-autenticacion-dev
+    ports:
+      - "3001:3001"
+    env_file:
+      - ../../.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - TZ=America/Guayaquil
+    volumes:
+      # Hot reload - código fuente
+      - ../../backend/services/autenticacion/src:/app/src:cached
+      # Named volume para node_modules (evita problemas)
+      - autenticacion_node_modules:/app/node_modules
+      # Logs
+      - autenticacion_logs:/app/logs
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==========================================
+  # Servicio SRI
+  # ==========================================
+  sri-service:
+    build:
+      context: ../../backend/services/sri-service
+      dockerfile: Dockerfile
+      target: development
+    container_name: bolsa-sri-dev
+    ports:
+      - "3002:3002"
+    env_file:
+      - ../../.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - TZ=America/Guayaquil
+      # Configuración específica SRI
+      - SRI_TIMEOUT=30000
+      - SRI_RETRY_ATTEMPTS=3
+    volumes:
+      - ../../backend/services/sri-service/src:/app/src:cached
+      - sri_node_modules:/app/node_modules
+      - sri_logs:/app/logs
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==========================================
+  # Servicio Registro Civil
+  # ==========================================
+  registrocivil-service:
+    build:
+      context: ../../backend/services/registrocivil-service
+      dockerfile: Dockerfile
+      target: development
+    container_name: bolsa-registrocivil-dev
+    ports:
+      - "3003:3003"
+    env_file:
+      - ../../.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - TZ=America/Guayaquil
+      # Configuración específica Registro Civil
+      - REGISTRO_CIVIL_TIMEOUT=30000
+      - REGISTRO_CIVIL_RETRY_ATTEMPTS=3
+    volumes:
+      - ../../backend/services/registrocivil-service/src:/app/src:cached
+      - registrocivil_node_modules:/app/node_modules
+      - registrocivil_logs:/app/logs
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==========================================
+  # Servicio Discord (Notificaciones)
+  # ==========================================
+  discord-service:
+    build:
+      context: ../../backend/services/discord-service
+      dockerfile: Dockerfile
+      target: development
+    container_name: bolsa-discord-dev
+    ports:
+      - "3004:3004"
+    env_file:
+      - ../../.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - TZ=America/Guayaquil
+    volumes:
+      - ../../backend/services/discord-service/src:/app/src:cached
+      - discord_node_modules:/app/node_modules
+      - discord_logs:/app/logs
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==========================================
+  # Redis (Cache y Rate Limiting)
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: bolsa-redis-dev
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-bolsa_redis_pass}
+    volumes:
+      - redis_data:/data
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  
+  # ==========================================
+  # Adminer (Gestor de BD - opcional)
+  # ==========================================
+  adminer:
+    image: adminer:latest
+    container_name: bolsa-adminer-dev
+    ports:
+      - "8081:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+      - ADMINER_DESIGN=pepa-linha
+    depends_on:
+      - postgres
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ==========================================
+  # Mailhog (Testing de emails - opcional)
+  # ==========================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: bolsa-mailhog-dev
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - bolsa-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  bolsa-network:
+    driver: bridge
+    name: bolsa-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  # Node modules (persisten entre rebuilds)
+  autenticacion_node_modules:
+    name: bolsa_autenticacion_node_modules
+  sri_node_modules:
+    name: bolsa_sri_node_modules
+  registrocivil_node_modules:
+    name: bolsa_registrocivil_node_modules
+  discord_node_modules:
+    name: bolsa_discord_node_modules
+  
+  # Logs
+  autenticacion_logs:
+    name: bolsa_autenticacion_logs
+  sri_logs:
+    name: bolsa_sri_logs
+  registrocivil_logs:
+    name: bolsa_registrocivil_logs
+  discord_logs:
+    name: bolsa_discord_logs
+  nginx_logs:
+    name: bolsa_nginx_logs
+  
+  # Datos
+  postgres_data:
+    name: bolsa_postgres_data
+  redis_data:
+    name: bolsa_redis_data
