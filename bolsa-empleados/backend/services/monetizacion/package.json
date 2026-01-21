@@ -1,0 +1,29 @@
+{
+  "name": "monetizacion-service",
+  "version": "1.0.0",
+  "description": "Microservicio de gestión de comisiones - Bolsa de Empleados",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "docker:build": "docker build -t monetizacion-service .",
+    "docker:run": "docker run -p 3004:8080 --env-file .env monetizacion-service"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "firebase-admin": "^13.6.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "CAIL",
+  "license": "ISC"
+}

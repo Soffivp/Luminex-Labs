@@ -1,0 +1,370 @@
+{
+  "info": {
+    "_postman_id": "f9a5c3d2-4e6b-5f7a-9c0d-1e2f3a4b5c6d",
+    "name": "CAIL - Vacantes Service",
+    "description": "Microservicio de Vacantes para el sistema CAIL (Centro de Atención e Inserción Laboral).\n\nEste servicio gestiona las vacantes de empleo publicadas por las empresas, incluyendo:\n- CRUD completo de vacantes\n- Gestión de estados (Activa, Pausada, Cerrada, Cancelada)\n- Competencias requeridas\n- Búsquedas por empresa, ubicación, competencia\n- Control de postulantes\n\n**Puerto por defecto:** 3003\n\n**Estados de vacante:**\n- `Activa` - Vacante abierta para postulaciones\n- `Pausada` - Temporalmente suspendida\n- `Cerrada` - Proceso finalizado\n- `Cancelada` - Vacante cancelada\n\n**Niveles laborales:**\n- Junior\n- Semi-Senior\n- Senior\n- Lead\n- Manager\n\n**Tipos de contrato:**\n- Indefinido\n- Temporal\n- Por Proyecto\n- Pasantía",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://vacantes-service-639327610992.us-central1.run.app",
+      "type": "string"
+    },
+    {
+      "key": "vacanteId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "empresaRUC",
+      "value": "1791234567001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "description": "Endpoints de salud y estado del servicio",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verifica el estado de salud del microservicio de vacantes.\n\n**Respuesta exitosa:**\n- `status`: Estado del servicio\n- `service`: Nombre del servicio\n- `timestamp`: Fecha/hora de la verificación"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Gestión de Vacantes",
+      "description": "Operaciones CRUD para vacantes de empleo",
+      "item": [
+        {
+          "name": "Listar Vacantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes"],
+              "query": [
+                {
+                  "key": "empresaRUC",
+                  "value": "{{empresaRUC}}",
+                  "description": "RUC de la empresa",
+                  "disabled": true
+                },
+                {
+                  "key": "estadoVacante",
+                  "value": "Activa",
+                  "description": "Estado: Activa, Pausada, Cerrada, Cancelada",
+                  "disabled": true
+                },
+                {
+                  "key": "ubicacion",
+                  "value": "Quito",
+                  "description": "Ciudad o ubicación",
+                  "disabled": true
+                },
+                {
+                  "key": "nivelLaboralRequerido",
+                  "value": "Senior",
+                  "description": "Nivel: Junior, Semi-Senior, Senior, Lead, Manager",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lista todas las vacantes con filtros opcionales.\n\n**Filtros disponibles (query params):**\n- `empresaRUC`: Filtrar por empresa\n- `estadoVacante`: Filtrar por estado\n- `ubicacion`: Filtrar por ciudad/ubicación\n- `nivelLaboralRequerido`: Filtrar por nivel laboral\n\n**Respuesta:**\nArray de vacantes con todos sus campos."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Vacante por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}"]
+            },
+            "description": "Obtiene una vacante específica por su ID.\n\n**Parámetros de ruta:**\n- `id`: ID de la vacante\n\n**Códigos de respuesta:**\n- `200`: Vacante encontrada\n- `404`: Vacante no encontrada"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Vacante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.id) {",
+                  "        pm.collectionVariables.set('vacanteId', response.id);",
+                  "        console.log('Vacante ID guardado:', response.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tituloCargo\": \"Desarrollador Full Stack\",\n  \"descripcionFunciones\": \"Desarrollo de aplicaciones web utilizando React y Node.js. Colaboración con equipos de diseño y producto. Mantenimiento y mejora de sistemas existentes.\",\n  \"requisitosEducacion\": \"Ingeniería en Sistemas, Computación o afines\",\n  \"aniosExperiencia\": \"3\",\n  \"competenciasRequeridas\": [\"JavaScript\", \"React\", \"Node.js\", \"SQL\", \"Git\"],\n  \"nivelLaboralRequerido\": \"Semi-Senior\",\n  \"ubicacion\": \"Quito\",\n  \"tipoContrato\": \"Indefinido\",\n  \"empresaRUC\": \"{{empresaRUC}}\",\n  \"salarioMinimo\": 1500,\n  \"salarioMaximo\": 2500,\n  \"beneficios\": [\"Seguro médico\", \"Trabajo remoto\", \"Capacitaciones\", \"Horario flexible\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes"]
+            },
+            "description": "Crea una nueva vacante de empleo.\n\n**Campos obligatorios:**\n- `tituloCargo`: Título del puesto\n- `empresaRUC`: RUC de la empresa (debe existir)\n\n**Campos opcionales:**\n- `descripcionFunciones`: Descripción de funciones y responsabilidades\n- `requisitosEducacion`: Requisitos académicos\n- `aniosExperiencia`: Años de experiencia requeridos (string)\n- `competenciasRequeridas`: Array de competencias/habilidades\n- `nivelLaboralRequerido`: Junior, Semi-Senior, Senior, Lead, Manager (default: Junior)\n- `ubicacion`: Ciudad o ubicación del trabajo\n- `tipoContrato`: Indefinido, Temporal, Por Proyecto, Pasantía (default: Indefinido)\n- `estadoVacante`: Activa, Pausada (default: Activa)\n- `salarioMinimo` / `salarioMaximo`: Rango salarial\n- `beneficios`: Array de beneficios\n- `fechaCierre`: Fecha límite para postulaciones\n\n**Campos automáticos:**\n- `fechaPublicacion`: Timestamp de creación\n- `fechaActualizacion`: Timestamp de última modificación\n- `cantidadPostulantes`: Inicia en 0\n\n**Test script:**\nGuarda automáticamente el ID de la vacante creada."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Vacante",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tituloCargo\": \"Desarrollador Full Stack Senior\",\n  \"aniosExperiencia\": \"5\",\n  \"nivelLaboralRequerido\": \"Senior\",\n  \"salarioMinimo\": 2000,\n  \"salarioMaximo\": 3500,\n  \"beneficios\": [\"Seguro médico\", \"Trabajo remoto\", \"Capacitaciones\", \"Horario flexible\", \"Bonos anuales\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}"]
+            },
+            "description": "Actualiza una vacante existente.\n\n**Campos actualizables:**\n- `tituloCargo`\n- `descripcionFunciones`\n- `requisitosEducacion`\n- `aniosExperiencia`\n- `competenciasRequeridas`\n- `nivelLaboralRequerido`\n- `ubicacion`\n- `tipoContrato`\n- `estadoVacante`\n- `salarioMinimo`\n- `salarioMaximo`\n- `beneficios`\n- `fechaCierre`\n\n**Campo automático:**\n- `fechaActualizacion`: Se actualiza automáticamente\n\n**Códigos de respuesta:**\n- `200`: Vacante actualizada\n- `404`: Vacante no encontrada"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Vacante",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}"]
+            },
+            "description": "Elimina una vacante del sistema.\n\n**Parámetros de ruta:**\n- `id`: ID de la vacante a eliminar\n\n**Códigos de respuesta:**\n- `200`: Vacante eliminada exitosamente\n- `404`: Vacante no encontrada\n\n**Nota:** Esta acción es irreversible."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Estado de Vacante",
+      "description": "Gestión del estado de las vacantes",
+      "item": [
+        {
+          "name": "Cambiar Estado de Vacante",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estadoVacante\": \"Pausada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}", "estado"]
+            },
+            "description": "Cambia el estado de una vacante.\n\n**Estados válidos:**\n- `Activa` - Vacante abierta para postulaciones\n- `Pausada` - Temporalmente suspendida\n- `Cerrada` - Proceso de selección finalizado\n- `Cancelada` - Vacante cancelada/eliminada lógicamente\n\n**Comportamiento especial:**\n- Si se cambia a `Cerrada`, se registra automáticamente `fechaCierre`\n\n**Códigos de respuesta:**\n- `200`: Estado actualizado\n- `400`: Estado inválido\n- `404`: Vacante no encontrada"
+          },
+          "response": []
+        },
+        {
+          "name": "Activar Vacante",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estadoVacante\": \"Activa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}", "estado"]
+            },
+            "description": "Reactiva una vacante pausada o cerrada.\n\n**Uso:**\nPermite volver a abrir una vacante para recibir postulaciones."
+          },
+          "response": []
+        },
+        {
+          "name": "Cerrar Vacante",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estadoVacante\": \"Cerrada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}", "estado"]
+            },
+            "description": "Cierra una vacante finalizando el proceso de selección.\n\n**Efecto:**\n- Cambia estado a `Cerrada`\n- Registra `fechaCierre` automáticamente\n- La vacante ya no acepta nuevas postulaciones"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Competencias",
+      "description": "Gestión de competencias requeridas para las vacantes",
+      "item": [
+        {
+          "name": "Agregar Competencia a Vacante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"competencia\": \"Docker\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}/competencias",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}", "competencias"]
+            },
+            "description": "Agrega una competencia requerida a una vacante.\n\n**Campo requerido:**\n- `competencia`: Nombre de la competencia/habilidad\n\n**Comportamiento:**\n- Si la competencia ya existe en la vacante, no se duplica\n- Actualiza `fechaActualizacion`\n\n**Respuesta:**\n- Lista actualizada de competencias requeridas\n\n**Códigos de respuesta:**\n- `200`: Competencia agregada\n- `400`: Campo competencia faltante\n- `404`: Vacante no encontrada"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Postulaciones",
+      "description": "Gestión de postulaciones a vacantes",
+      "item": [
+        {
+          "name": "Registrar Postulación",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/{{vacanteId}}/postular",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "{{vacanteId}}", "postular"]
+            },
+            "description": "Incrementa el contador de postulantes de una vacante.\n\n**Validaciones:**\n- La vacante debe existir\n- La vacante debe estar en estado `Activa`\n\n**Efecto:**\n- Incrementa `cantidadPostulantes` en 1\n- Actualiza `fechaActualizacion`\n\n**Códigos de respuesta:**\n- `200`: Postulación registrada\n- `400`: La vacante no está activa\n- `404`: Vacante no encontrada\n\n**Nota:** Este endpoint solo incrementa el contador. La gestión completa de postulaciones se realiza en el microservicio de Matching."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Búsquedas",
+      "description": "Endpoints de búsqueda especializada de vacantes",
+      "item": [
+        {
+          "name": "Vacantes por Empresa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/empresa/{{empresaRUC}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "empresa", "{{empresaRUC}}"]
+            },
+            "description": "Lista todas las vacantes de una empresa específica.\n\n**Parámetros de ruta:**\n- `ruc`: RUC de la empresa\n\n**Respuesta:**\nArray de vacantes de la empresa (todos los estados)."
+          },
+          "response": []
+        },
+        {
+          "name": "Vacantes Activas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/activas",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "activas"]
+            },
+            "description": "Lista todas las vacantes en estado Activa.\n\n**Uso:**\nIdeal para mostrar vacantes disponibles a candidatos.\n\n**Respuesta:**\nArray de vacantes con `estadoVacante: 'Activa'`."
+          },
+          "response": []
+        },
+        {
+          "name": "Vacantes por Competencia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/competencia/JavaScript",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "competencia", "JavaScript"]
+            },
+            "description": "Busca vacantes que requieran una competencia específica.\n\n**Parámetros de ruta:**\n- `competencia`: Nombre de la competencia a buscar\n\n**Ejemplos de búsqueda:**\n- `/vacantes/competencia/JavaScript`\n- `/vacantes/competencia/Python`\n- `/vacantes/competencia/SQL`\n\n**Respuesta:**\nArray de vacantes que incluyen la competencia en `competenciasRequeridas`."
+          },
+          "response": []
+        },
+        {
+          "name": "Vacantes por Ubicación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vacantes/ubicacion/Quito",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacantes", "ubicacion", "Quito"]
+            },
+            "description": "Busca vacantes activas en una ubicación específica.\n\n**Parámetros de ruta:**\n- `ubicacion`: Ciudad o ubicación\n\n**Filtro combinado:**\n- Solo retorna vacantes `Activas` en la ubicación especificada\n\n**Ejemplos:**\n- `/vacantes/ubicacion/Quito`\n- `/vacantes/ubicacion/Guayaquil`\n- `/vacantes/ubicacion/Cuenca`\n\n**Respuesta:**\nArray de vacantes activas en la ubicación."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

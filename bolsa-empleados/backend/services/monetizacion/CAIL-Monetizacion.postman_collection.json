@@ -1,0 +1,521 @@
+{
+	"info": {
+		"_postman_id": "cail-monetizacion-2024",
+		"name": "CAIL - Servicio de Monetización",
+		"description": "Colección de endpoints para el microservicio de Monetización de CAIL.\n\nEste servicio gestiona las comisiones generadas por los procesos de colocación laboral, incluyendo diferentes tipos de comisiones y su seguimiento de pago.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3004)\n\n## Estados de Comisión\n- `Pendiente`: Comisión creada, pendiente de aprobación\n- `Aprobada`: Comisión aprobada, lista para pago\n- `Pagada`: Comisión pagada\n- `Cancelada`: Comisión cancelada\n- `EnDisputa`: Comisión en disputa/revisión\n\n## Tipos de Comisión\n- `comisionColocacion`: Por colocación exitosa\n- `comisionSueldo`: Porcentaje del sueldo\n- `comisionContrato`: Por firma de contrato\n- `comisionRetencion`: Por retención del empleado",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://monetizacion-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "comisionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "empresaRUC",
+			"value": "1234567890001",
+			"type": "string"
+		},
+		{
+			"key": "idAdministrador",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio de monetización."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD de Comisiones",
+			"item": [
+				{
+					"name": "Listar Comisiones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones"]
+						},
+						"description": "Lista todas las comisiones registradas.\n\n**Respuesta:**\n- Array de comisiones con todos sus datos"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Comisiones (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones?estadoComision=Pendiente",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones"],
+							"query": [
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por empresa",
+									"disabled": true
+								},
+								{
+									"key": "estadoComision",
+									"value": "Pendiente",
+									"description": "Filtrar por estado"
+								},
+								{
+									"key": "idAdministrador",
+									"value": "ADMIN-001",
+									"description": "Filtrar por administrador asignado",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista comisiones con filtros opcionales.\n\n**Query params:**\n- `empresaRUC`: RUC de la empresa\n- `estadoComision`: Estado de la comisión\n- `idAdministrador`: ID del administrador asignado"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Comisión por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Obtiene una comisión específica por su ID.\n\n**Parámetros:**\n- `id`: ID de la comisión"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Comisión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('comisionId', jsonData.id);",
+									"    console.log('Comisión creada con ID: ' + jsonData.id);",
+									"    console.log('Monto total: ' + jsonData.montoTotal);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empresaRUC\": \"1234567890001\",\n    \"comisionColocacion\": 500.00,\n    \"comisionSueldo\": 150.00,\n    \"comisionContrato\": 100.00,\n    \"comisionRetencion\": 50.00,\n    \"idProceso\": [\"PROC-001\", \"PROC-002\"],\n    \"idAdministrador\": \"ADMIN-001\",\n    \"observaciones\": \"Comisión por colocación de desarrollador senior\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones"]
+						},
+						"description": "Crea una nueva comisión.\n\n**Campos requeridos:**\n- `empresaRUC`: RUC de la empresa (debe existir)\n\n**Campos opcionales:**\n- `comisionColocacion`: Monto por colocación exitosa\n- `comisionSueldo`: Monto por porcentaje de sueldo\n- `comisionContrato`: Monto por firma de contrato\n- `comisionRetencion`: Monto por retención del empleado\n- `estadoComision`: Estado inicial (default: 'Pendiente')\n- `idProceso`: Array de IDs de procesos asociados\n- `idAdministrador`: ID del administrador asignado\n- `observaciones`: Notas adicionales\n\n**Comportamiento:**\n- Verifica que la empresa existe\n- Calcula automáticamente el monto total\n\n**Respuesta:**\n- `id`: ID de la comisión creada\n- `montoTotal`: Suma de todas las comisiones"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Comisión Simple",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empresaRUC\": \"1234567890001\",\n    \"comisionColocacion\": 300.00,\n    \"observaciones\": \"Comisión básica por colocación\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones"]
+						},
+						"description": "Ejemplo de creación de comisión con solo el monto de colocación."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Comisión",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comisionColocacion\": 550.00,\n    \"comisionSueldo\": 175.00,\n    \"observaciones\": \"Monto ajustado por negociación\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Actualiza datos de una comisión existente.\n\n**Parámetros:**\n- `id`: ID de la comisión\n\n**Campos actualizables:**\n- `comisionColocacion`\n- `comisionSueldo`\n- `comisionContrato`\n- `comisionRetencion`\n- `estadoComision`\n- `idProceso`\n- `idAdministrador`\n- `observaciones`\n\n**Comportamiento:**\n- Recalcula automáticamente el monto total\n\n**Respuesta:**\n- `montoTotal`: Nuevo monto total calculado"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Comisión",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Elimina una comisión.\n\n**Parámetros:**\n- `id`: ID de la comisión\n\n**Restricción:** No se pueden eliminar comisiones en estado 'Pagada'.\n\n**Respuesta:**\n- `eliminado`: true si fue eliminada exitosamente"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estados y Pagos",
+			"item": [
+				{
+					"name": "Cambiar Estado de Comisión",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoComision\": \"Aprobada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Cambia el estado de una comisión.\n\n**Parámetros:**\n- `id`: ID de la comisión\n\n**Body requerido:**\n- `estadoComision`: Nuevo estado\n\n**Estados válidos:**\n- `Pendiente`: Pendiente de aprobación\n- `Aprobada`: Lista para pago\n- `Pagada`: Pagada (registra fecha de pago automáticamente)\n- `Cancelada`: Cancelada\n- `EnDisputa`: En revisión/disputa"
+					},
+					"response": []
+				},
+				{
+					"name": "Aprobar Comisión",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoComision\": \"Aprobada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}"
+								}
+							]
+						},
+						"description": "Aprueba una comisión para pago."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Comisión",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoComision\": \"Cancelada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}"
+								}
+							]
+						},
+						"description": "Cancela una comisión."
+					},
+					"response": []
+				},
+				{
+					"name": "Marcar en Disputa",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoComision\": \"EnDisputa\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}"
+								}
+							]
+						},
+						"description": "Marca una comisión como en disputa para revisión."
+					},
+					"response": []
+				},
+				{
+					"name": "Pagar Comisión",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metodoPago\": \"Transferencia\",\n    \"referenciaPago\": \"TRF-2024-001234\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/pagar",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "pagar"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Marca una comisión como pagada con detalles del pago.\n\n**Parámetros:**\n- `id`: ID de la comisión\n\n**Body opcional:**\n- `metodoPago`: Método utilizado (default: 'Transferencia')\n- `referenciaPago`: Número de referencia del pago\n\n**Restricciones:**\n- No se puede pagar una comisión ya pagada\n- No se puede pagar una comisión cancelada\n\n**Comportamiento:**\n- Cambia estado a 'Pagada'\n- Registra fecha de pago\n- Guarda método y referencia de pago\n\n**Respuesta:**\n- `montoTotal`: Monto pagado"
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar Proceso a Comisión",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idProceso\": \"PROC-003\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/:id/procesos",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", ":id", "procesos"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{comisionId}}",
+									"description": "ID de la comisión"
+								}
+							]
+						},
+						"description": "Agrega un proceso asociado a la comisión.\n\n**Parámetros:**\n- `id`: ID de la comisión\n\n**Body requerido:**\n- `idProceso`: ID del proceso a agregar\n\n**Comportamiento:**\n- Agrega el proceso al array si no existe\n- No duplica procesos ya existentes\n\n**Respuesta:**\n- `idProceso`: Array actualizado de procesos"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Consultas Específicas",
+			"item": [
+				{
+					"name": "Comisiones por Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/empresa/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", "empresa", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{empresaRUC}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Lista todas las comisiones de una empresa específica.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa"
+					},
+					"response": []
+				},
+				{
+					"name": "Comisiones Pendientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/pendientes",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", "pendientes"]
+						},
+						"description": "Lista todas las comisiones en estado 'Pendiente'.\n\nÚtil para el dashboard de administración y seguimiento de cobros."
+					},
+					"response": []
+				},
+				{
+					"name": "Comisiones por Administrador",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/administrador/:idAdmin",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", "administrador", ":idAdmin"],
+							"variable": [
+								{
+									"key": "idAdmin",
+									"value": "{{idAdministrador}}",
+									"description": "ID del administrador"
+								}
+							]
+						},
+						"description": "Lista todas las comisiones asignadas a un administrador específico.\n\n**Parámetros:**\n- `idAdmin`: ID del administrador\n\nÚtil para seguimiento de comisiones por responsable."
+					},
+					"response": []
+				},
+				{
+					"name": "Resumen de Comisiones por Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/comisiones/resumen/empresa/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["comisiones", "resumen", "empresa", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{empresaRUC}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Obtiene un resumen financiero de comisiones de una empresa.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Respuesta:**\n- `totalComisiones`: Cantidad total de comisiones\n- `montoTotalPendiente`: Suma de montos pendientes y aprobados\n- `montoTotalPagado`: Suma de montos pagados\n- `montoTotalGeneral`: Suma de todos los montos\n- `porEstado`: Distribución por estado (Pendiente, Aprobada, Pagada, Cancelada, EnDisputa)\n\n**Uso recomendado:**\n- Dashboard financiero de empresa\n- Reportes de facturación\n- Seguimiento de cuentas por cobrar"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

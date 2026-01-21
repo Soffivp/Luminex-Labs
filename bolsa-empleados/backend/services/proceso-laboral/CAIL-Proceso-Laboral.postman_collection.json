@@ -1,0 +1,616 @@
+{
+	"info": {
+		"_postman_id": "cail-proceso-laboral-2024",
+		"name": "CAIL - Servicio de Proceso Laboral",
+		"description": "Colección de endpoints para el microservicio de Proceso Laboral de CAIL.\n\nEste servicio gestiona la documentación necesaria para la contratación laboral, incluyendo la subida, revisión y aprobación de documentos requeridos.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3009)\n\n## Estados del Proceso\n- `pendiente_documentos`: Esperando documentación\n- `documentos_en_revision`: Documentos subidos, pendientes de revisión\n- `documentos_aprobados`: Todos los documentos aprobados\n- `documentos_rechazados`: Uno o más documentos rechazados\n- `contratado`: Proceso finalizado exitosamente\n- `cancelado`: Proceso cancelado\n\n## Estados de Documentos\n- `pendiente_revision`: Documento subido, esperando revisión\n- `aprobado`: Documento aprobado\n- `rechazado`: Documento rechazado\n- `reemplazado`: Documento reemplazado por versión nueva",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3009",
+			"type": "string"
+		},
+		{
+			"key": "procesoId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "matchingId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "documentoId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Información del Servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Obtiene información general del microservicio de Proceso Laboral."
+					},
+					"response": []
+				},
+				{
+					"name": "Tipos de Documentos Disponibles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/tipos-documentos",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "tipos-documentos"]
+						},
+						"description": "Lista los tipos de documentos disponibles para subir.\n\n**Respuesta:**\n- `total`: Total de tipos de documentos\n- `requeridos`: Cantidad de tipos obligatorios\n- `tipos`: Array con detalle de cada tipo\n  - `codigo`: Código del tipo de documento\n  - `nombre`: Nombre descriptivo\n  - `requerido`: Si es obligatorio\n  - `extensionesPermitidas`: Formatos aceptados\n  - `tamanoMaximoMB`: Tamaño máximo en MB"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestión de Procesos",
+			"item": [
+				{
+					"name": "Iniciar Proceso Laboral",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.procesoId) {",
+									"        pm.collectionVariables.set('procesoId', jsonData.procesoId);",
+									"    } else if (jsonData.proceso && jsonData.proceso.id) {",
+									"        pm.collectionVariables.set('procesoId', jsonData.proceso.id);",
+									"    }",
+									"    console.log('Proceso ID guardado');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matchingId\": \"{{matchingId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/iniciar",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "iniciar"]
+						},
+						"description": "Inicia un proceso laboral a partir de un matching aprobado.\n\n**Body requerido:**\n- `matchingId`: ID del matching aprobado\n\n**Validaciones:**\n- El matching debe existir\n- El matching debe estar en estado 'aprobado' o 'contratado'\n- No debe existir ya un proceso para este matching\n\n**Comportamiento:**\n- Crea el proceso laboral con estado 'pendiente_documentos'\n- Asigna los documentos requeridos según configuración\n\n**Respuesta:**\n- `procesoId`: ID del proceso creado\n- `documentosPendientes`: Lista de documentos requeridos"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Proceso por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso laboral"
+								}
+							]
+						},
+						"description": "Obtiene un proceso laboral con sus documentos y progreso.\n\n**Parámetros:**\n- `id`: ID del proceso laboral\n\n**Respuesta incluye:**\n- Datos del proceso\n- Progreso de documentación\n- Lista de documentos subidos\n- Estado de verificación"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Proceso por Matching",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/matching/:matchingId",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "matching", ":matchingId"],
+							"variable": [
+								{
+									"key": "matchingId",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Obtiene el proceso laboral asociado a un matching.\n\n**Parámetros:**\n- `matchingId`: ID del matching\n\nÚtil para consultar el proceso desde el contexto del matching."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Procesos Laborales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/procesos-laborales",
+							"host": ["{{baseUrl}}"],
+							"path": ["procesos-laborales"]
+						},
+						"description": "Lista todos los procesos laborales.\n\n**Respuesta:**\n- `total`: Cantidad de procesos\n- `procesos`: Array de procesos con su progreso"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Procesos (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/procesos-laborales?estado=pendiente_documentos&limite=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["procesos-laborales"],
+							"query": [
+								{
+									"key": "estado",
+									"value": "pendiente_documentos",
+									"description": "Filtrar por estado del proceso"
+								},
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por empresa",
+									"disabled": true
+								},
+								{
+									"key": "empleadoCedula",
+									"value": "1234567890",
+									"description": "Filtrar por empleado",
+									"disabled": true
+								},
+								{
+									"key": "limite",
+									"value": "20",
+									"description": "Límite de resultados (default: 50)"
+								}
+							]
+						},
+						"description": "Lista procesos laborales con filtros opcionales.\n\n**Query params:**\n- `estado`: Estado del proceso\n- `empresaRUC`: RUC de la empresa\n- `empleadoCedula`: Cédula del empleado\n- `limite`: Máximo de resultados (default: 50)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Estado del Proceso",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estado\": \"documentos_aprobados\",\n    \"observaciones\": \"Todos los documentos verificados correctamente\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso"
+								}
+							]
+						},
+						"description": "Actualiza el estado de un proceso laboral.\n\n**Parámetros:**\n- `id`: ID del proceso\n\n**Body requerido:**\n- `estado`: Nuevo estado del proceso\n\n**Body opcional:**\n- `observaciones`: Notas adicionales\n\n**Estados válidos:**\n- `pendiente_documentos`\n- `documentos_en_revision`\n- `documentos_aprobados`\n- `documentos_rechazados`\n- `contratado`\n- `cancelado`\n\n**Nota:** Si se marca como 'contratado', también actualiza el matching asociado."
+					},
+					"response": []
+				},
+				{
+					"name": "Marcar como Contratado",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estado\": \"contratado\",\n    \"observaciones\": \"Proceso completado. Fecha inicio: 2024-02-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}"
+								}
+							]
+						},
+						"description": "Marca el proceso como contratado (finalización exitosa).\n\nEsto también actualiza el matching asociado a estado 'contratado'."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Proceso",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"motivo\": \"Candidato desistió del proceso\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso"
+								}
+							]
+						},
+						"description": "Cancela un proceso laboral.\n\n**Parámetros:**\n- `id`: ID del proceso\n\n**Body opcional:**\n- `motivo`: Razón de la cancelación\n\n**Restricción:** No se puede cancelar un proceso ya marcado como 'contratado'.\n\n**Comportamiento:**\n- Cambia estado a 'cancelado'\n- Registra motivo y fecha de cancelación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subida de Documentos",
+			"item": [
+				{
+					"name": "Subir Documento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('documentoId', jsonData.documentoId);",
+									"    console.log('Documento ID: ' + jsonData.documentoId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipoDocumento\": \"CEDULA\",\n    \"nombreArchivo\": \"cedula_identidad.pdf\",\n    \"contenidoBase64\": \"JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9GaWx0ZXIvRmxhdGVEZWNvZGUvTGVuZ3RoIDUxPj4Kc3RyZWFtCnicMzK0UDC0NNYzsDTQMweSIGajYKRnrGdhaKRmrGBoampmCQBinAdrCmVuZHN0cmVhbQplbmRvYmoKMSAwIG9iago8PC9UeXBlL1BhZ2UvTWVkaWFCb3hbMCAwIDYxMiA3OTJdL1Jlc291cmNlczw8Pj4vQ29udGVudHMgMyAwIFIvUGFyZW50IDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMSAwIFJdPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjUgMCBvYmoKPDwvUHJvZHVjZXIoaUxvdmVQREYpL01vZERhdGUoRDoyMDI0MDExNTE1MzAwMCswMCcwMCcpL0NyZWF0aW9uRGF0ZShEOjIwMjQwMTE1MTUzMDAwKzAwJzAwJyk+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMTMxIDAwMDAwIG4gCjAwMDAwMDAyNDkgMDAwMDAgbiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAwMzAwIDAwMDAwIG4gCjAwMDAwMDAzNDUgMDAwMDAgbiAKdHJhaWxlcgo8PC9TaXplIDYvUm9vdCA0IDAgUi9JbmZvIDUgMCBSPj4Kc3RhcnR4cmVmCjQ4NgolJUVPRgo=\",\n    \"descripcion\": \"Cédula de identidad del candidato\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/documentos",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "documentos"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso laboral"
+								}
+							]
+						},
+						"description": "Sube un documento al proceso laboral.\n\n**Parámetros:**\n- `id`: ID del proceso laboral\n\n**Body requerido:**\n- `tipoDocumento`: Código del tipo de documento (ej: CEDULA, CV, TITULO)\n- `nombreArchivo`: Nombre del archivo con extensión\n- `contenidoBase64`: Contenido del archivo en Base64\n\n**Body opcional:**\n- `descripcion`: Descripción del documento\n\n**Validaciones:**\n- El proceso debe existir y no estar finalizado\n- El tipo de archivo debe ser válido (PDF, imágenes)\n- El tamaño debe estar dentro del límite permitido\n- Si es PDF, se valida que sea un PDF válido\n\n**Comportamiento:**\n- Si ya existe un documento del mismo tipo, lo marca como 'reemplazado'\n- Actualiza el estado del proceso a 'documentos_en_revision'\n\n**Respuesta:**\n- `documentoId`: ID del documento subido\n- `estado`: 'pendiente_revision'"
+					},
+					"response": []
+				},
+				{
+					"name": "Subir Múltiples Documentos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"documentos\": [\n        {\n            \"tipoDocumento\": \"CEDULA\",\n            \"nombreArchivo\": \"cedula.pdf\",\n            \"contenidoBase64\": \"JVBERi0xLjQK...\",\n            \"descripcion\": \"Cédula de identidad\"\n        },\n        {\n            \"tipoDocumento\": \"CV\",\n            \"nombreArchivo\": \"curriculum.pdf\",\n            \"contenidoBase64\": \"JVBERi0xLjQK...\",\n            \"descripcion\": \"Hoja de vida actualizada\"\n        },\n        {\n            \"tipoDocumento\": \"TITULO\",\n            \"nombreArchivo\": \"titulo_universitario.pdf\",\n            \"contenidoBase64\": \"JVBERi0xLjQK...\",\n            \"descripcion\": \"Título profesional\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/documentos/lote",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "documentos", "lote"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso laboral"
+								}
+							]
+						},
+						"description": "Sube múltiples documentos en una sola operación.\n\n**Parámetros:**\n- `id`: ID del proceso laboral\n\n**Body requerido:**\n- `documentos`: Array de documentos, cada uno con:\n  - `tipoDocumento`: Código del tipo\n  - `nombreArchivo`: Nombre del archivo\n  - `contenidoBase64`: Contenido en Base64\n  - `descripcion` (opcional): Descripción\n\n**Respuesta:**\n- `subidos`: Cantidad de documentos subidos exitosamente\n- `errores`: Cantidad de errores\n- `resultados`: Detalle de cada documento subido\n- `detalleErrores`: Detalle de errores (si los hay)"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Documentos del Proceso",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/documentos",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "documentos"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}",
+									"description": "ID del proceso laboral"
+								}
+							]
+						},
+						"description": "Lista todos los documentos de un proceso laboral.\n\n**Parámetros:**\n- `id`: ID del proceso laboral\n\n**Query params opcionales:**\n- `estado`: Filtrar por estado del documento\n\n**Respuesta:**\n- `total`: Cantidad de documentos\n- `progreso`: Porcentaje de completitud\n- `documentosRequeridos`: Estado de cada documento requerido\n- `documentos`: Lista de documentos (sin contenido)"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Documentos (filtrado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/:id/documentos?estado=pendiente_revision",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", ":id", "documentos"],
+							"query": [
+								{
+									"key": "estado",
+									"value": "pendiente_revision",
+									"description": "Filtrar por estado: pendiente_revision, aprobado, rechazado"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{procesoId}}"
+								}
+							]
+						},
+						"description": "Lista documentos filtrados por estado."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId"],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}",
+									"description": "ID del documento"
+								}
+							]
+						},
+						"description": "Obtiene información de un documento específico (sin contenido).\n\n**Parámetros:**\n- `documentoId`: ID del documento\n\n**Query params opcionales:**\n- `incluirContenido`: 'true' para incluir el contenido Base64"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Documento (con contenido)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId?incluirContenido=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId"],
+							"query": [
+								{
+									"key": "incluirContenido",
+									"value": "true"
+								}
+							],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}"
+								}
+							]
+						},
+						"description": "Obtiene el documento incluyendo su contenido Base64."
+					},
+					"response": []
+				},
+				{
+					"name": "Descargar Documento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId/descargar",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId", "descargar"],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}",
+									"description": "ID del documento"
+								}
+							]
+						},
+						"description": "Obtiene el contenido del documento para descarga.\n\n**Respuesta:**\n- `nombreArchivo`: Nombre original del archivo\n- `mimeType`: Tipo MIME del archivo\n- `tamano`: Tamaño en bytes\n- `contenidoBase64`: Contenido del archivo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Revisión de Documentos",
+			"item": [
+				{
+					"name": "Aprobar Documento",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"observaciones\": \"Documento verificado correctamente\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId/aprobar",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId", "aprobar"],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}",
+									"description": "ID del documento"
+								}
+							]
+						},
+						"description": "Aprueba un documento.\n\n**Parámetros:**\n- `documentoId`: ID del documento\n\n**Body opcional:**\n- `observaciones`: Notas de la revisión\n\n**Comportamiento:**\n- Cambia estado del documento a 'aprobado'\n- Registra fecha de revisión\n- Si todos los documentos requeridos están aprobados, actualiza el proceso a 'documentos_aprobados'\n\n**Respuesta:**\n- `documentosCompletos`: true si todos los requeridos están aprobados\n- `faltantes`: Lista de documentos aún pendientes"
+					},
+					"response": []
+				},
+				{
+					"name": "Rechazar Documento",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"motivo\": \"Documento ilegible. Por favor suba una versión con mejor calidad.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId/rechazar",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId", "rechazar"],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}",
+									"description": "ID del documento"
+								}
+							]
+						},
+						"description": "Rechaza un documento.\n\n**Parámetros:**\n- `documentoId`: ID del documento\n\n**Body requerido:**\n- `motivo`: Razón del rechazo (obligatorio)\n\n**Comportamiento:**\n- Cambia estado del documento a 'rechazado'\n- Actualiza el proceso a 'documentos_rechazados'\n- El candidato deberá subir una nueva versión del documento"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Documento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/proceso-laboral/documentos/:documentoId",
+							"host": ["{{baseUrl}}"],
+							"path": ["proceso-laboral", "documentos", ":documentoId"],
+							"variable": [
+								{
+									"key": "documentoId",
+									"value": "{{documentoId}}",
+									"description": "ID del documento"
+								}
+							]
+						},
+						"description": "Elimina un documento del proceso.\n\n**Parámetros:**\n- `documentoId`: ID del documento\n\n**Restricción:** No se pueden eliminar documentos que ya fueron aprobados."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estadísticas",
+			"item": [
+				{
+					"name": "Estadísticas de Procesos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/procesos-laborales/estadisticas",
+							"host": ["{{baseUrl}}"],
+							"path": ["procesos-laborales", "estadisticas"]
+						},
+						"description": "Obtiene estadísticas generales de procesos laborales.\n\n**Respuesta:**\n- `total`: Total de procesos\n- `porEstado`: Distribución por estado\n- `contratadosTotal`: Procesos finalizados exitosamente\n- `canceladosTotal`: Procesos cancelados\n- `enProcesoTotal`: Procesos activos\n- `tasaExito`: Porcentaje de éxito (contratados vs finalizados)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

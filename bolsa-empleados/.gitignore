@@ -1,22 +1,17 @@
-# ============================================
-# BOLSA EMPLEADOS - Git Ignore
-# ============================================
-
 # Dependencies
 node_modules/
+*/node_modules/
 **/node_modules/
 
-# Environment files (CRITICAL - contain secrets)
+# Environment files (NEVER commit these - contain secrets)
 .env
 .env.local
 .env.development
 .env.production
-.env.*
+.env.*.local
 *.env
-**/.env
-**/.env.*
 
-# Firebase service account keys (NEVER commit)
+# Firebase service account keys (CRITICAL - never commit)
 **/serviceAccountKey*.json
 **/firebase-adminsdk*.json
 **/firebase-credentials*.json
@@ -34,14 +29,7 @@ node_modules/
 *.swp
 *.swo
 *~
-
-# OS generated files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # Logs
@@ -56,7 +44,6 @@ dist/
 build/
 .next/
 out/
-web-build/
 
 # Coverage reports
 coverage/
@@ -74,6 +61,23 @@ temp/
 *.tmp
 *.temp
 
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# Docker
+.docker/
+docker-compose.override.yml
+
 # Expo / React Native
 .expo/
 .expo-shared/
@@ -83,44 +87,31 @@ temp/
 *.key
 *.mobileprovision
 *.orig.*
-expo-env.d.ts
 
 # Metro bundler
 .metro-health-check*
 
 # iOS
-**/ios/Pods/
-**/ios/.xcode.env.local
-**/ios/build/
+ios/Pods/
+ios/.xcode.env.local
+ios/build/
 
 # Android
-**/android/.gradle/
-**/android/app/build/
-**/android/build/
+android/.gradle/
+android/app/build/
+android/build/
 *.apk
 *.aab
-
-# Kotlin
-.kotlin/
 
 # Compiled files
 *.js.map
 *.d.ts
-*.tsbuildinfo
 
-# Docker
-docker-compose.override.yml
-
-# Archives (don't commit large files)
+# Archives
 *.rar
 *.zip
 *.tar.gz
 *.7z
-
-# Test files
-__tests__/
-*.test.js
-*.spec.js
 
 # Postman collections with sensitive data
 **/postman/*secrets*.json
@@ -132,13 +123,3 @@ __tests__/
 # Sensitive backup files
 *.bak
 *.backup
-
-# Windows
-nul
-
-# Claude Code
-.claude/
-
-# app-example folder
-app-example/
-**/app-example/

@@ -1,0 +1,695 @@
+{
+	"info": {
+		"_postman_id": "cail-auth-service-2024",
+		"name": "CAIL - Servicio de Autenticación",
+		"description": "Colección de endpoints para el microservicio de autenticación de CAIL (Centro de Atención Integral Laboral).\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3006)\n- Los endpoints protegidos requieren el header `Authorization: Bearer {{accessToken}}`\n\n## Flujo de autenticación\n1. Login con cédula y contraseña\n2. Usar el `accessToken` para endpoints protegidos\n3. Usar `refreshToken` para renovar tokens cuando expiren",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://auth-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "sessionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Información del Servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Obtiene información general del microservicio y lista de endpoints disponibles."
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Autenticación Pública",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('sessionId', jsonData.sessionId);",
+									"    pm.collectionVariables.set('userId', jsonData.usuario.id);",
+									"    console.log('Tokens guardados exitosamente');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1234567890\",\n    \"password\": \"MiPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Inicia sesión con cédula y contraseña.\n\n**Campos requeridos:**\n- `cedula`: Cédula del usuario (string)\n- `password`: Contraseña (string)\n\n**Respuesta exitosa:**\n- `accessToken`: Token JWT para autenticación\n- `refreshToken`: Token para renovar sesión\n- `sessionId`: ID de la sesión actual\n- `usuario`: Datos del usuario\n- `primerLogin`: Indica si es el primer login (debe cambiar contraseña)"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('sessionId', jsonData.sessionId);",
+									"    console.log('Tokens renovados exitosamente');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Renueva los tokens de autenticación usando el refresh token.\n\n**Campos requeridos:**\n- `refreshToken`: Token de renovación obtenido en el login\n\n**Respuesta exitosa:**\n- Nuevos `accessToken`, `refreshToken` y `sessionId`"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sessionId\": \"{{sessionId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Cierra la sesión actual.\n\n**Campos opcionales:**\n- `sessionId`: ID de la sesión a cerrar (si no se proporciona, solo limpia cookies)"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Empresa por Cédula",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/verificar-empresa/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "verificar-empresa", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "1234567890",
+									"description": "Cédula a verificar"
+								}
+							]
+						},
+						"description": "Verifica si una cédula pertenece a un usuario de tipo empresa.\n\n**Parámetros:**\n- `cedula`: Cédula del usuario a verificar\n\n**Respuesta:**\n- `existe`: Si existe un usuario con esa cédula\n- `esEmpresa`: Si el usuario es de tipo empresa\n- `empresa`: Información de la empresa (si aplica)"
+					},
+					"response": []
+				},
+				{
+					"name": "Setup Admin Inicial",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1234567890\",\n    \"nombre\": \"Administrador Principal\",\n    \"email\": \"admin@cail.com\",\n    \"password\": \"AdminPassword123!\",\n    \"claveSetup\": \"CAIL-SETUP-2024\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/setup-admin",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "setup-admin"]
+						},
+						"description": "Crea el administrador inicial del sistema. Solo funciona si no existe ningún administrador.\n\n**Campos requeridos:**\n- `cedula`: Cédula del administrador\n- `nombre`: Nombre completo\n- `password`: Contraseña (mínimo 8 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales)\n- `claveSetup`: Clave de configuración (definida en variable de entorno ADMIN_SETUP_KEY)\n\n**Campos opcionales:**\n- `email`: Correo electrónico"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuario Autenticado",
+			"item": [
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Obtiene la información del usuario autenticado.\n\n**Requiere:** Token de acceso válido\n\n**Respuesta:**\n- Datos del usuario sin contraseña\n- Si es empleado: información adicional del empleado\n- Si es empresa: información adicional de la empresa"
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Contraseña",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"passwordActual\": \"MiPasswordActual123!\",\n    \"passwordNuevo\": \"MiNuevoPassword456!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/cambiar-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "cambiar-password"]
+						},
+						"description": "Permite al usuario autenticado cambiar su contraseña.\n\n**Requiere:** Token de acceso válido\n\n**Campos requeridos:**\n- `passwordActual`: Contraseña actual\n- `passwordNuevo`: Nueva contraseña (mínimo 8 caracteres)\n\n**Requisitos de contraseña:**\n- Mínimo 8 caracteres\n- Al menos una mayúscula\n- Al menos una minúscula\n- Al menos un número\n- Al menos un carácter especial"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Administración de Usuarios (Solo Admin)",
+			"item": [
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"0987654321\",\n    \"nombre\": \"Juan Pérez\",\n    \"email\": \"juan.perez@ejemplo.com\",\n    \"tipoUsuario\": \"empleado\",\n    \"empresaRUC\": null,\n    \"password\": null,\n    \"longitudPassword\": 12\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios"]
+						},
+						"description": "Crea un nuevo usuario en el sistema.\n\n**Requiere:** Token de administrador\n\n**Campos requeridos:**\n- `cedula`: Cédula del usuario (10-13 caracteres)\n- `nombre`: Nombre completo (mínimo 2 caracteres)\n- `tipoUsuario`: Tipo de usuario (`empleado`, `empresa`, `administrador`)\n\n**Campos opcionales:**\n- `email`: Correo electrónico\n- `empresaRUC`: RUC de la empresa (requerido si tipoUsuario es `empresa`)\n- `password`: Contraseña personalizada (si no se proporciona, se genera automáticamente)\n- `longitudPassword`: Longitud de contraseña auto-generada (8-20, default: 12)\n\n**Validaciones:**\n- Si es `empleado`: debe existir en la colección de empleados\n- Si es `empresa`: debe existir la empresa con el RUC proporcionado\n\n**Respuesta exitosa:**\n- Datos del usuario creado\n- Credenciales temporales (contraseña en texto plano, solo esta vez)"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Usuario Empresa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1122334455\",\n    \"nombre\": \"María García - Empresa ABC\",\n    \"email\": \"contacto@empresaabc.com\",\n    \"tipoUsuario\": \"empresa\",\n    \"empresaRUC\": \"1234567890001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios"]
+						},
+						"description": "Ejemplo de creación de usuario tipo empresa.\n\n**Nota:** El RUC de la empresa debe estar previamente registrado en el sistema."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios"]
+						},
+						"description": "Lista todos los usuarios del sistema.\n\n**Requiere:** Token de administrador\n\n**Respuesta:**\n- Array de usuarios sin contraseñas"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Usuarios (con filtros)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios?tipoUsuario=empleado&activo=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios"],
+							"query": [
+								{
+									"key": "tipoUsuario",
+									"value": "empleado",
+									"description": "Filtrar por tipo: empleado, empresa, administrador"
+								},
+								{
+									"key": "activo",
+									"value": "true",
+									"description": "Filtrar por estado: true o false"
+								},
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por RUC de empresa",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista usuarios con filtros opcionales.\n\n**Requiere:** Token de administrador\n\n**Query params opcionales:**\n- `tipoUsuario`: Filtrar por tipo (`empleado`, `empresa`, `administrador`)\n- `activo`: Filtrar por estado (`true` o `false`)\n- `empresaRUC`: Filtrar por RUC de empresa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Obtiene un usuario específico por su ID.\n\n**Requiere:** Token de administrador\n\n**Parámetros:**\n- `id`: ID del usuario (formato: USR-timestamp)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Juan Pérez Actualizado\",\n    \"email\": \"juan.perez.nuevo@ejemplo.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Actualiza datos de un usuario.\n\n**Requiere:** Token de administrador\n\n**Campos actualizables:**\n- `nombre`: Nombre del usuario\n- `email`: Correo electrónico\n- `activo`: Estado del usuario\n- `empresaRUC`: RUC de empresa (solo para usuarios tipo empresa)"
+					},
+					"response": []
+				},
+				{
+					"name": "Resetear Contraseña",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": null,\n    \"longitudPassword\": 12\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id/resetear-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id", "resetear-password"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Resetea la contraseña de un usuario.\n\n**Requiere:** Token de administrador\n\n**Campos opcionales:**\n- `password`: Nueva contraseña personalizada (si no se proporciona, se genera automáticamente)\n- `longitudPassword`: Longitud de contraseña auto-generada (8-20, default: 12)\n\n**Efectos:**\n- Genera nueva contraseña\n- Marca `primerLogin: true` (usuario debe cambiar contraseña)\n- Cierra todas las sesiones activas del usuario\n\n**Respuesta:**\n- `passwordTemporal`: Nueva contraseña en texto plano"
+					},
+					"response": []
+				},
+				{
+					"name": "Resetear Contraseña (personalizada)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"NuevaPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id/resetear-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id", "resetear-password"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Resetea la contraseña de un usuario con una contraseña personalizada.\n\n**Requiere:** Token de administrador"
+					},
+					"response": []
+				},
+				{
+					"name": "Activar Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Activa un usuario desactivado.\n\n**Requiere:** Token de administrador\n\n**Campos requeridos:**\n- `activo`: `true`"
+					},
+					"response": []
+				},
+				{
+					"name": "Desactivar Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activo\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/usuarios/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "usuarios", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Desactiva un usuario.\n\n**Requiere:** Token de administrador\n\n**Campos requeridos:**\n- `activo`: `false`\n\n**Efectos:**\n- Usuario no podrá iniciar sesión\n- Todas las sesiones activas del usuario serán cerradas"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
+
+

@@ -1,0 +1,21 @@
+{
+  "name": "reportes-service",
+  "version": "1.0.0",
+  "description": "Microservicio de Reportes y Análisis - CAIL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.5.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.25.2",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  }
+}

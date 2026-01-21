@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "cail-colocacion-laboral-2024",
+		"name": "CAIL - Servicio de Colocación Laboral",
+		"description": "Colección de endpoints para el microservicio de Colocación Laboral de CAIL.\n\nEste servicio gestiona el ciclo de vida completo de las colocaciones laborales, desde la contratación hasta la finalización, incluyendo renovaciones, evaluaciones de desempeño e incidencias.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3009)\n\n## Estados de Colocación\n- `activa`: Colocación vigente\n- `finalizada`: Colocación terminada",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://colocacion-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "colocacionId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Información del Servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Obtiene información general del microservicio de Colocación Laboral."
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestión de Colocaciones",
+			"item": [
+				{
+					"name": "Crear Colocación",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('colocacionId', jsonData.colocacion.id);",
+									"    console.log('Colocación creada con ID: ' + jsonData.colocacion.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matchingId\": null,\n    \"empleadoCedula\": \"1234567890\",\n    \"empleadoNombre\": \"Juan Pérez García\",\n    \"empresaRUC\": \"1234567890001\",\n    \"empresaNombre\": \"Empresa ABC S.A.\",\n    \"vacanteId\": \"VAC-001\",\n    \"vacanteTitulo\": \"Desarrollador Full Stack\",\n    \"tipoContrato\": \"Indefinido\",\n    \"fechaInicio\": \"2024-01-15\",\n    \"fechaFin\": null,\n    \"salarioAcordado\": 1500.00,\n    \"modalidadTrabajo\": \"Híbrido\",\n    \"jornadaLaboral\": \"Tiempo completo\",\n    \"creadoPor\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones"]
+						},
+						"description": "Crea una nueva colocación laboral.\n\n**Campos requeridos:**\n- `empleadoCedula`: Cédula del empleado\n- `empresaRUC`: RUC de la empresa\n- `fechaInicio`: Fecha de inicio del contrato\n\n**Campos opcionales:**\n- `matchingId`: ID del matching asociado (si existe, debe estar aprobado)\n- `empleadoNombre`: Nombre del empleado\n- `empresaNombre`: Nombre de la empresa\n- `vacanteId`: ID de la vacante\n- `vacanteTitulo`: Título de la vacante\n- `tipoContrato`: Tipo de contrato (default: 'Indefinido')\n- `fechaFin`: Fecha fin del contrato (null para indefinido)\n- `salarioAcordado`: Salario acordado\n- `modalidadTrabajo`: 'Presencial', 'Remoto', 'Híbrido' (default: 'Presencial')\n- `jornadaLaboral`: 'Tiempo completo', 'Medio tiempo', 'Por horas' (default: 'Tiempo completo')\n- `creadoPor`: Usuario que crea el registro\n\n**Efectos:**\n- Si hay matchingId, actualiza el matching a estado 'contratado'\n- Actualiza el empleado a estado 'Colocado'"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Colocación desde Matching",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('colocacionId', jsonData.colocacion.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matchingId\": \"MATCH-123456789\",\n    \"empleadoCedula\": \"0987654321\",\n    \"empleadoNombre\": \"María López\",\n    \"empresaRUC\": \"9876543210001\",\n    \"empresaNombre\": \"Tech Solutions S.A.\",\n    \"vacanteId\": \"VAC-002\",\n    \"vacanteTitulo\": \"Analista de Datos\",\n    \"tipoContrato\": \"Plazo fijo\",\n    \"fechaInicio\": \"2024-02-01\",\n    \"fechaFin\": \"2024-08-01\",\n    \"salarioAcordado\": 1800.00,\n    \"modalidadTrabajo\": \"Remoto\",\n    \"jornadaLaboral\": \"Tiempo completo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones"]
+						},
+						"description": "Ejemplo de creación de colocación a partir de un matching aprobado.\n\n**Nota:** El matching debe existir y tener estado 'aprobado' o 'contratado'."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Colocaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones"]
+						},
+						"description": "Lista todas las colocaciones laborales.\n\n**Respuesta:**\n- `total`: Número de colocaciones\n- `colocaciones`: Array de colocaciones"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Colocaciones (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones?estado=activa&limite=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones"],
+							"query": [
+								{
+									"key": "estado",
+									"value": "activa",
+									"description": "Filtrar por estado: activa, finalizada"
+								},
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por RUC de empresa",
+									"disabled": true
+								},
+								{
+									"key": "empleadoCedula",
+									"value": "1234567890",
+									"description": "Filtrar por cédula de empleado",
+									"disabled": true
+								},
+								{
+									"key": "tipoContrato",
+									"value": "Indefinido",
+									"description": "Filtrar por tipo de contrato",
+									"disabled": true
+								},
+								{
+									"key": "limite",
+									"value": "20",
+									"description": "Límite de resultados (default: 50)"
+								}
+							]
+						},
+						"description": "Lista colocaciones con filtros opcionales.\n\n**Query params:**\n- `estado`: Estado de la colocación ('activa', 'finalizada')\n- `empresaRUC`: RUC de la empresa\n- `empleadoCedula`: Cédula del empleado\n- `tipoContrato`: Tipo de contrato\n- `limite`: Número máximo de resultados (default: 50)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Colocación por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Obtiene una colocación específica por su ID.\n\n**Respuesta adicional:**\n- Si está activa, incluye `duracionActual` con días/meses desde el inicio"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Colocación",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"salarioAcordado\": 1650.00,\n    \"modalidadTrabajo\": \"Presencial\",\n    \"jornadaLaboral\": \"Tiempo completo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Actualiza datos de una colocación.\n\n**Campos actualizables:**\n- `salarioAcordado`\n- `modalidadTrabajo`\n- `jornadaLaboral`\n- `tipoContrato`\n- `fechaFin`\n- Otros campos de datos\n\n**Campos NO actualizables (protegidos):**\n- `id`\n- `fechaCreacion`\n- `creadoPor`"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Acciones sobre Colocaciones",
+			"item": [
+				{
+					"name": "Finalizar Colocación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"motivo\": \"Renuncia voluntaria\",\n    \"fechaFinalizacion\": \"2024-06-30\",\n    \"observaciones\": \"El empleado presentó su renuncia con 15 días de anticipación.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id/finalizar",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id", "finalizar"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Finaliza una colocación laboral activa.\n\n**Campos:**\n- `motivo`: Razón de la finalización (requerido)\n- `fechaFinalizacion`: Fecha de fin (opcional, default: fecha actual)\n- `observaciones`: Comentarios adicionales\n\n**Motivos comunes:**\n- Renuncia voluntaria\n- Despido\n- Fin de contrato\n- Mutuo acuerdo\n- Período de prueba no superado\n\n**Efectos:**\n- Cambia estado a 'finalizada'\n- Calcula duración total\n- Actualiza empleado a estado 'Disponible'"
+					},
+					"response": []
+				},
+				{
+					"name": "Renovar Contrato",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nuevaFechaFin\": \"2025-06-30\",\n    \"nuevoSalario\": 1750.00,\n    \"observaciones\": \"Renovación anual con incremento salarial del 5%\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id/renovar",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id", "renovar"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Renueva el contrato de una colocación activa.\n\n**Campos:**\n- `nuevaFechaFin`: Nueva fecha de finalización (requerido)\n- `nuevoSalario`: Nuevo salario acordado (opcional, mantiene el anterior si no se especifica)\n- `observaciones`: Comentarios sobre la renovación\n\n**Efectos:**\n- Actualiza fecha de fin y salario\n- Registra la renovación en el historial\n- Guarda datos anteriores para trazabilidad\n\n**Nota:** Solo funciona con colocaciones activas"
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar Evaluación de Desempeño",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"periodo\": \"Enero - Marzo 2024\",\n    \"puntuacion\": 85,\n    \"fortalezas\": [\n        \"Excelente trabajo en equipo\",\n        \"Cumplimiento de deadlines\",\n        \"Proactividad\"\n    ],\n    \"areasAMejorar\": [\n        \"Comunicación escrita\",\n        \"Documentación de código\"\n    ],\n    \"comentarios\": \"Buen desempeño general. Se recomienda capacitación en documentación técnica.\",\n    \"evaluador\": \"María García - Supervisora\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id/evaluaciones",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id", "evaluaciones"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Agrega una evaluación de desempeño a la colocación.\n\n**Campos:**\n- `periodo`: Período evaluado (ej: 'Q1 2024', 'Enero - Marzo 2024')\n- `puntuacion`: Puntuación numérica (0-100)\n- `fortalezas`: Array de puntos fuertes identificados\n- `areasAMejorar`: Array de áreas de mejora\n- `comentarios`: Observaciones generales\n- `evaluador`: Nombre/cargo del evaluador\n\n**Respuesta:**\n- Evaluación creada con ID único y timestamp"
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Incidencia",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipo\": \"ausencia\",\n    \"descripcion\": \"Ausencia no justificada el día 15 de marzo de 2024\",\n    \"gravedad\": \"media\",\n    \"reportadoPor\": \"Carlos López - RRHH\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/:id/incidencias",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", ":id", "incidencias"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{colocacionId}}",
+									"description": "ID de la colocación"
+								}
+							]
+						},
+						"description": "Registra una incidencia en la colocación laboral.\n\n**Campos:**\n- `tipo`: Tipo de incidencia ('ausencia', 'tardanza', 'conducta', 'rendimiento', 'general')\n- `descripcion`: Descripción detallada de la incidencia\n- `gravedad`: Nivel de gravedad ('baja', 'media', 'alta', 'crítica')\n- `reportadoPor`: Persona que reporta la incidencia\n\n**Respuesta:**\n- Incidencia creada con ID único, timestamp y estado 'abierta'"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estadísticas y Reportes",
+			"item": [
+				{
+					"name": "Estadísticas Generales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/estadisticas/general",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", "estadisticas", "general"]
+						},
+						"description": "Obtiene estadísticas generales de todas las colocaciones.\n\n**Respuesta incluye:**\n- Total de colocaciones\n- Colocaciones activas vs finalizadas\n- Distribución por tipo de contrato\n- Distribución por modalidad de trabajo\n- Promedios de duración\n- Otras métricas relevantes"
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas Generales (por período)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/estadisticas/general?periodo=2024",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", "estadisticas", "general"],
+							"query": [
+								{
+									"key": "periodo",
+									"value": "2024",
+									"description": "Filtrar por año o período específico"
+								}
+							]
+						},
+						"description": "Obtiene estadísticas filtradas por período.\n\n**Query params:**\n- `periodo`: Año o período a filtrar (ej: '2024', '2023-Q1')"
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas por Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/estadisticas/por-empresa",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", "estadisticas", "por-empresa"]
+						},
+						"description": "Obtiene ranking de empresas por número de colocaciones.\n\n**Respuesta:**\n- `total`: Número de empresas con colocaciones\n- `ranking`: Array ordenado por total de colocaciones\n  - `empresaRUC`: RUC de la empresa\n  - `empresaNombre`: Nombre de la empresa\n  - `total`: Total de colocaciones\n  - `activas`: Colocaciones activas\n  - `finalizadas`: Colocaciones finalizadas"
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas - Colocaciones Próximas a Vencer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/alertas/proximas-vencer?dias=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", "alertas", "proximas-vencer"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "30",
+									"description": "Días de anticipación para la alerta (default: 30)"
+								}
+							]
+						},
+						"description": "Lista colocaciones activas cuyo contrato está próximo a vencer.\n\n**Query params:**\n- `dias`: Número de días hacia adelante para buscar (default: 30)\n\n**Respuesta:**\n- `total`: Número de colocaciones próximas a vencer\n- `diasConsiderados`: Días usados en el filtro\n- `colocaciones`: Array de colocaciones ordenadas por días restantes\n  - Incluye campo `diasRestantes` con días hasta vencimiento\n\n**Uso recomendado:**\n- Ejecutar diariamente para monitoreo\n- Usar para gestionar renovaciones proactivamente"
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas - Vencimientos en 60 días",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/colocaciones/alertas/proximas-vencer?dias=60",
+							"host": ["{{baseUrl}}"],
+							"path": ["colocaciones", "alertas", "proximas-vencer"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "60",
+									"description": "Alertas para los próximos 60 días"
+								}
+							]
+						},
+						"description": "Lista colocaciones que vencen en los próximos 60 días.\n\nÚtil para planificación de renovaciones con mayor anticipación."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

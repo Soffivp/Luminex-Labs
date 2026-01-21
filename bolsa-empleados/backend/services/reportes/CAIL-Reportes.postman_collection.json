@@ -1,0 +1,443 @@
+{
+  "info": {
+    "_postman_id": "e8f4b2c1-3d5a-4e6f-8a9b-0c1d2e3f4a5b",
+    "name": "CAIL - Reportes Service",
+    "description": "Microservicio de Reportes para el sistema CAIL (Centro de Atención e Inserción Laboral).\n\nEste servicio proporciona reportes y estadísticas sobre:\n- Matchings (coincidencias empleado-vacante)\n- Empresas y sus métricas de contratación\n- Empleados más solicitados\n- Vacantes más demandadas\n- Dashboard ejecutivo general\n- Exportación de datos\n\n**Puerto por defecto:** 3007\n\n**Períodos disponibles para filtros:**\n- `hoy` - Día actual\n- `semana` - Última semana\n- `mes` - Último mes\n- `trimestre` - Últimos 3 meses\n- `semestre` - Últimos 6 meses\n- `año` - Último año",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://reportes-service-639327610992.us-central1.run.app",
+      "type": "string"
+    },
+    {
+      "key": "empresaRUC",
+      "value": "1791234567001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "description": "Endpoints de salud y estado del servicio",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Verifica el estado de salud del microservicio de reportes.\n\n**Respuesta exitosa:**\n- `status`: Estado del servicio\n- `service`: Nombre del servicio\n- `timestamp`: Fecha/hora de la verificación"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes de Matchings",
+      "description": "Reportes y estadísticas sobre matchings (coincidencias entre empleados y vacantes)",
+      "item": [
+        {
+          "name": "Reporte General de Matchings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/matchings?periodo=mes&limite=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "matchings"],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "mes",
+                  "description": "Período: hoy, semana, mes, trimestre, semestre, año"
+                },
+                {
+                  "key": "fechaInicio",
+                  "value": "2024-01-01",
+                  "description": "Fecha inicio (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2024-12-31",
+                  "description": "Fecha fin (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "estadoMatch",
+                  "value": "pendiente",
+                  "description": "Estado: pendiente, aprobado, rechazado, contratado, precargada",
+                  "disabled": true
+                },
+                {
+                  "key": "empresaRUC",
+                  "value": "{{empresaRUC}}",
+                  "description": "RUC de empresa para filtrar",
+                  "disabled": true
+                },
+                {
+                  "key": "minScore",
+                  "value": "70",
+                  "description": "Score mínimo de coincidencia",
+                  "disabled": true
+                },
+                {
+                  "key": "maxScore",
+                  "value": "100",
+                  "description": "Score máximo de coincidencia",
+                  "disabled": true
+                },
+                {
+                  "key": "limite",
+                  "value": "100",
+                  "description": "Límite de resultados (default: 100)"
+                }
+              ]
+            },
+            "description": "Genera un reporte general de matchings con filtros avanzados.\n\n**Parámetros de query:**\n- `periodo`: Período predefinido (hoy, semana, mes, trimestre, semestre, año)\n- `fechaInicio` / `fechaFin`: Rango de fechas personalizado\n- `estadoMatch`: Filtrar por estado\n- `empresaRUC`: Filtrar por empresa\n- `minScore` / `maxScore`: Rango de scores\n- `limite`: Máximo de resultados\n\n**Respuesta incluye:**\n- Resumen estadístico (total, por estado, tasas)\n- Estadísticas de scores (promedio, min, max, desviación)\n- Lista de matchings filtrados"
+          },
+          "response": []
+        },
+        {
+          "name": "Matchings Exitosos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/matchings/exitosos?limite=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "matchings", "exitosos"],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "trimestre",
+                  "description": "Período de tiempo",
+                  "disabled": true
+                },
+                {
+                  "key": "empresaRUC",
+                  "value": "{{empresaRUC}}",
+                  "description": "RUC de empresa",
+                  "disabled": true
+                },
+                {
+                  "key": "limite",
+                  "value": "50",
+                  "description": "Límite de resultados (default: 50)"
+                }
+              ]
+            },
+            "description": "Obtiene matchings exitosos (aprobados y contratados) ordenados por score.\n\n**Filtros disponibles:**\n- `periodo`: Filtrar por período\n- `empresaRUC`: Filtrar por empresa\n- `limite`: Máximo de resultados\n\n**Respuesta incluye:**\n- Total de matchings exitosos\n- Desglose: contratados vs aprobados\n- Tasa de contratación\n- Promedio de score\n- Lista ordenada por score descendente"
+          },
+          "response": []
+        },
+        {
+          "name": "Matchings Pendientes Alta Compatibilidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/matchings/pendientes-alta-compatibilidad?minScore=80&limite=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "matchings", "pendientes-alta-compatibilidad"],
+              "query": [
+                {
+                  "key": "minScore",
+                  "value": "80",
+                  "description": "Score mínimo requerido (default: 80)"
+                },
+                {
+                  "key": "limite",
+                  "value": "20",
+                  "description": "Límite de resultados (default: 20)"
+                }
+              ]
+            },
+            "description": "Lista matchings en estado pendiente con alta compatibilidad.\n\nÚtil para identificar oportunidades de contratación prometedoras que requieren atención.\n\n**Parámetros:**\n- `minScore`: Score mínimo de coincidencia (default: 80)\n- `limite`: Máximo de resultados\n\n**Respuesta incluye:**\n- Total encontrados\n- Score mínimo aplicado\n- Promedio de score\n- Lista ordenada por score descendente"
+          },
+          "response": []
+        },
+        {
+          "name": "Tendencias de Matching por Mes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/matchings/tendencias?meses=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "matchings", "tendencias"],
+              "query": [
+                {
+                  "key": "meses",
+                  "value": "6",
+                  "description": "Cantidad de meses a analizar (default: 6)"
+                }
+              ]
+            },
+            "description": "Genera tendencias mensuales de matchings.\n\nPermite visualizar la evolución temporal del sistema de matching.\n\n**Parámetros:**\n- `meses`: Cantidad de meses a incluir en el análisis\n\n**Respuesta incluye:**\n- Tendencias generales por mes\n- Tendencias desglosadas por estado (exitosos, rechazados, pendientes)\n- Período analizado"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes de Empresas",
+      "description": "Reportes y estadísticas sobre empresas del sistema",
+      "item": [
+        {
+          "name": "Reporte de Empresas con Estadísticas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/empresas?ordenarPor=matchings",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "empresas"],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "Receptora",
+                  "description": "Tipo: Emisora, Receptora",
+                  "disabled": true
+                },
+                {
+                  "key": "estado",
+                  "value": "Activa",
+                  "description": "Estado de la empresa",
+                  "disabled": true
+                },
+                {
+                  "key": "ordenarPor",
+                  "value": "matchings",
+                  "description": "Ordenar por: matchings, tasaExito, contrataciones"
+                }
+              ]
+            },
+            "description": "Genera reporte de empresas con estadísticas completas de matching.\n\n**Filtros:**\n- `tipo`: Tipo de empresa (Emisora, Receptora)\n- `estado`: Estado de la empresa\n- `ordenarPor`: Criterio de ordenamiento\n\n**Estadísticas por empresa:**\n- Total de matchings\n- Matchings exitosos, pendientes, rechazados\n- Contrataciones efectivas\n- Vacantes activas y totales\n- Tasa de éxito\n- Promedio de score"
+          },
+          "response": []
+        },
+        {
+          "name": "Top Empresas por Contrataciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/empresas/top-contrataciones?limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "empresas", "top-contrataciones"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "10",
+                  "description": "Cantidad de empresas en el ranking (default: 10)"
+                },
+                {
+                  "key": "periodo",
+                  "value": "año",
+                  "description": "Período: hoy, semana, mes, trimestre, semestre, año",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Ranking de empresas con más contrataciones efectivas.\n\n**Parámetros:**\n- `limite`: Cantidad de empresas a mostrar\n- `periodo`: Filtrar por período de tiempo\n\n**Respuesta incluye:**\n- Ranking ordenado por contrataciones\n- Total de contrataciones en el período\n- Datos básicos de cada empresa"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes de Empleados",
+      "description": "Reportes y estadísticas sobre empleados del sistema",
+      "item": [
+        {
+          "name": "Empleados Más Solicitados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/empleados/mas-solicitados?limite=10&minMatchings=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "empleados", "mas-solicitados"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "10",
+                  "description": "Cantidad de empleados en el ranking (default: 10)"
+                },
+                {
+                  "key": "minMatchings",
+                  "value": "1",
+                  "description": "Mínimo de matchings para incluir (default: 1)"
+                }
+              ]
+            },
+            "description": "Ranking de empleados con más matchings (más solicitados por empresas).\n\n**Parámetros:**\n- `limite`: Cantidad de empleados a mostrar\n- `minMatchings`: Mínimo de matchings para ser incluido\n\n**Estadísticas por empleado:**\n- Total de matchings\n- Matchings exitosos\n- Matchings pendientes\n- Matchings rechazados\n- Tasa de éxito\n- Datos del perfil del empleado"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes de Vacantes",
+      "description": "Reportes y estadísticas sobre vacantes del sistema",
+      "item": [
+        {
+          "name": "Vacantes Más Demandadas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/vacantes/mas-demandadas?limite=10&soloActivas=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "vacantes", "mas-demandadas"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "10",
+                  "description": "Cantidad de vacantes en el ranking (default: 10)"
+                },
+                {
+                  "key": "soloActivas",
+                  "value": "true",
+                  "description": "Solo vacantes activas (default: true)"
+                }
+              ]
+            },
+            "description": "Ranking de vacantes con más matchings (más demandadas).\n\n**Parámetros:**\n- `limite`: Cantidad de vacantes a mostrar\n- `soloActivas`: Filtrar solo vacantes activas\n\n**Estadísticas por vacante:**\n- Total de matchings\n- Matchings exitosos\n- Contrataciones efectivas\n- Tasa de éxito\n- Datos de la vacante (título, empresa, nivel requerido)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "Dashboard ejecutivo con métricas generales del sistema",
+      "item": [
+        {
+          "name": "Dashboard Resumen Ejecutivo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/dashboard?periodo=mes",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "dashboard"],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "mes",
+                  "description": "Período: hoy, semana, mes, trimestre, semestre, año"
+                }
+              ]
+            },
+            "description": "Dashboard ejecutivo con métricas consolidadas de todo el sistema.\n\n**Métricas incluidas:**\n\n**Empresas:**\n- Total, activas\n- Emisoras vs receptoras\n\n**Empleados:**\n- Total, publicados, disponibles\n\n**Vacantes:**\n- Total, activas, cerradas\n\n**Matchings:**\n- Total histórico y en período\n- Por estado (pendientes, aprobados, contratados, rechazados)\n- Tasa de éxito\n- Promedio de score\n\n**Alertas:**\n- Matchings pendientes con alta compatibilidad\n- Vacantes activas sin matchings"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Exportación",
+      "description": "Endpoints para exportar datos en diferentes formatos",
+      "item": [
+        {
+          "name": "Exportar Matchings (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/exportar/matchings?formato=json",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "exportar", "matchings"],
+              "query": [
+                {
+                  "key": "formato",
+                  "value": "json",
+                  "description": "Formato: json, csv"
+                },
+                {
+                  "key": "estadoMatch",
+                  "value": "contratado",
+                  "description": "Filtrar por estado",
+                  "disabled": true
+                },
+                {
+                  "key": "empresaRUC",
+                  "value": "{{empresaRUC}}",
+                  "description": "Filtrar por empresa",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaInicio",
+                  "value": "2024-01-01",
+                  "description": "Fecha inicio (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2024-12-31",
+                  "description": "Fecha fin (YYYY-MM-DD)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exporta datos de matchings en formato JSON estructurado.\n\n**Filtros disponibles:**\n- `estadoMatch`: Filtrar por estado\n- `empresaRUC`: Filtrar por empresa\n- `fechaInicio` / `fechaFin`: Rango de fechas\n\n**Respuesta:**\n- Total de registros\n- Fecha de exportación\n- Array de datos completos"
+          },
+          "response": []
+        },
+        {
+          "name": "Exportar Matchings (CSV)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/exportar/matchings?formato=csv",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "exportar", "matchings"],
+              "query": [
+                {
+                  "key": "formato",
+                  "value": "csv",
+                  "description": "Formato: json, csv"
+                },
+                {
+                  "key": "estadoMatch",
+                  "value": "contratado",
+                  "description": "Filtrar por estado",
+                  "disabled": true
+                },
+                {
+                  "key": "empresaRUC",
+                  "value": "{{empresaRUC}}",
+                  "description": "Filtrar por empresa",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaInicio",
+                  "value": "2024-01-01",
+                  "description": "Fecha inicio (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2024-12-31",
+                  "description": "Fecha fin (YYYY-MM-DD)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exporta datos de matchings en formato CSV para uso en Excel u otras herramientas.\n\n**Columnas del CSV:**\n- ID\n- Empleado\n- Vacante\n- Empresa\n- Score\n- Estado\n- Fecha\n\n**Filtros disponibles:**\n- `estadoMatch`: Filtrar por estado\n- `empresaRUC`: Filtrar por empresa\n- `fechaInicio` / `fechaFin`: Rango de fechas\n\n**Headers de respuesta:**\n- Content-Type: text/csv\n- Content-Disposition: attachment; filename=\"matchings.csv\""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

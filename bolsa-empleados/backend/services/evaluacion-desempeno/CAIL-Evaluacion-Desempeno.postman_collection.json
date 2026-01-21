@@ -1,0 +1,540 @@
+{
+	"info": {
+		"_postman_id": "cail-evaluacion-desempeno-2024",
+		"name": "CAIL - Servicio de Evaluación de Desempeño",
+		"description": "Colección de endpoints para el microservicio de Evaluación de Desempeño de CAIL.\n\nEste servicio evalúa el desempeño de empleados basándose en 5 criterios principales:\n- **Logros**: Metas y objetivos alcanzados\n- **Certificaciones**: Certificaciones profesionales obtenidas\n- **Actitud**: Evaluación de referencias y comportamiento\n- **Antigüedad**: Años de experiencia laboral\n- **Titulación**: Nivel educativo y formación académica\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3008)\n\n## Sistema de Puntaje\n- Cada criterio se evalúa de 0 a 100\n- El puntaje global se calcula con pesos configurables\n- Niveles: Excelente (90+), Muy Bueno (75-89), Bueno (60-74), Regular (45-59), Básico (<45)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://evaluacion-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "cedula",
+			"value": "1234567890",
+			"type": "string"
+		},
+		{
+			"key": "evaluacionId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Información del Servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Obtiene información general del microservicio de Evaluación de Desempeño."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Evaluaciones por Criterio",
+			"item": [
+				{
+					"name": "Evaluar Logros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/logros/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "logros", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Evalúa los logros y metas alcanzadas por el empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Criterios de evaluación:**\n- Logros registrados en el perfil\n- Cumplimiento de objetivos\n- Reconocimientos obtenidos\n\n**Respuesta:**\n- `puntaje`: Puntaje de 0 a 100\n- `logrosEncontrados`: Cantidad de logros registrados"
+					},
+					"response": []
+				},
+				{
+					"name": "Evaluar Certificaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/certificaciones/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "certificaciones", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Evalúa las certificaciones profesionales del empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Criterios de evaluación:**\n- Cantidad de certificaciones\n- Relevancia de las certificaciones\n- Vigencia de las certificaciones\n\n**Respuesta:**\n- `puntaje`: Puntaje de 0 a 100\n- `certificacionesEncontradas`: Cantidad de certificaciones registradas"
+					},
+					"response": []
+				},
+				{
+					"name": "Evaluar Actitud",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/actitud/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "actitud", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Evalúa la actitud y comportamiento del empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Criterios de evaluación:**\n- Referencias laborales\n- Evaluaciones de comportamiento\n- Trabajo en equipo\n\n**Respuesta:**\n- `puntaje`: Puntaje de 0 a 100\n- `referenciasEncontradas`: Cantidad de referencias registradas"
+					},
+					"response": []
+				},
+				{
+					"name": "Evaluar Antigüedad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/antiguedad/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "antiguedad", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Evalúa la antigüedad y experiencia laboral del empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Criterios de evaluación:**\n- Años de experiencia total\n- Historial de empleos\n- Estabilidad laboral\n\n**Respuesta:**\n- `puntaje`: Puntaje de 0 a 100\n- `aniosExperiencia`: Años de experiencia registrados\n- `experienciasLaborales`: Cantidad de empleos anteriores"
+					},
+					"response": []
+				},
+				{
+					"name": "Evaluar Titulación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/titulacion/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "titulacion", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Evalúa la formación académica y titulación del empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Criterios de evaluación:**\n- Nivel educativo alcanzado\n- Títulos académicos\n- Formación complementaria\n\n**Respuesta:**\n- `puntaje`: Puntaje de 0 a 100\n- `nivelEducativo`: Nivel educativo del empleado\n- `formacionAcademica`: Cantidad de formaciones registradas"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Evaluación Global",
+			"item": [
+				{
+					"name": "Calcular Puntaje Global",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Calcula el puntaje global de desempeño con pesos predeterminados.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Pesos predeterminados:**\n- Logros: 25%\n- Certificaciones: 20%\n- Actitud: 20%\n- Antigüedad: 15%\n- Titulación: 20%\n\n**Respuesta:**\n- `puntajeGlobal`: Puntaje final ponderado (0-100)\n- `puntajeLogros`: Puntaje en logros\n- `puntajeCertificaciones`: Puntaje en certificaciones\n- `puntajeActitud`: Puntaje en actitud\n- `puntajeAntiguedad`: Puntaje en antigüedad\n- `puntajeTitulacion`: Puntaje en titulación"
+					},
+					"response": []
+				},
+				{
+					"name": "Calcular Puntaje (Pesos Personalizados)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pesos\": {\n        \"logros\": 30,\n        \"certificaciones\": 25,\n        \"actitud\": 15,\n        \"antiguedad\": 10,\n        \"titulacion\": 20\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Calcula el puntaje global con pesos personalizados.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Body:**\n- `pesos`: Objeto con los pesos por criterio\n  - `logros`: Peso para logros (0-100)\n  - `certificaciones`: Peso para certificaciones (0-100)\n  - `actitud`: Peso para actitud (0-100)\n  - `antiguedad`: Peso para antigüedad (0-100)\n  - `titulacion`: Peso para titulación (0-100)\n\n**Importante:** Los pesos DEBEN sumar exactamente 100.\n\n**Ejemplo de pesos:**\n- Perfil técnico: más peso a certificaciones y titulación\n- Perfil gerencial: más peso a logros y actitud"
+					},
+					"response": []
+				},
+				{
+					"name": "Generar Informe de Ponderación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/:cedula/informe",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", ":cedula", "informe"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Genera un informe detallado de evaluación con recomendaciones.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Respuesta incluye:**\n- `empleadoNombre`: Nombre completo\n- `puntajeGlobal`: Puntaje final\n- `nivel`: Clasificación (Excelente, Muy Bueno, Bueno, Regular, Básico)\n- `recomendacion`: Recomendación basada en el nivel\n- `fortalezas`: Array de áreas fuertes identificadas\n- `areasAMejorar`: Array de áreas que necesitan mejora\n- Desglose de puntajes por criterio"
+					},
+					"response": []
+				},
+				{
+					"name": "Guardar Evaluación",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('evaluacionId', jsonData.id);",
+									"    console.log('Evaluación guardada con ID: ' + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pesos\": {\n        \"logros\": 25,\n        \"certificaciones\": 20,\n        \"actitud\": 20,\n        \"antiguedad\": 15,\n        \"titulacion\": 20\n    },\n    \"observaciones\": \"Evaluación trimestral Q1 2024. Empleado muestra buen progreso en certificaciones.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/:cedula/guardar",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", ":cedula", "guardar"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Guarda una evaluación de desempeño en el historial.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Body (opcional):**\n- `pesos`: Pesos personalizados (deben sumar 100)\n- `observaciones`: Comentarios adicionales del evaluador\n\n**Comportamiento:**\n- Calcula la evaluación completa\n- Genera el informe con fortalezas y áreas a mejorar\n- Guarda todo en la colección `evaluacion_desempeno`\n\n**Respuesta:**\n- `id`: ID de la evaluación guardada\n- Datos completos de la evaluación"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Historial de Evaluaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/:cedula/historial",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", ":cedula", "historial"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Obtiene el historial de todas las evaluaciones de un empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Respuesta:**\n- `totalEvaluaciones`: Cantidad de evaluaciones registradas\n- `evolucion`: Análisis de evolución (si hay 2+ evaluaciones)\n  - `primera`: Puntaje de la primera evaluación\n  - `ultima`: Puntaje de la última evaluación\n  - `diferencia`: Cambio en puntos\n  - `tendencia`: 'mejora' o 'declive'\n- `evaluaciones`: Array de evaluaciones ordenadas por fecha (más reciente primero)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Consultas de Evaluaciones",
+			"item": [
+				{
+					"name": "Listar Evaluaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluaciones-desempeno",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluaciones-desempeno"]
+						},
+						"description": "Lista todas las evaluaciones de desempeño guardadas.\n\n**Respuesta:**\n- `total`: Número total de evaluaciones\n- `estadisticas`: Estadísticas generales\n- `evaluaciones`: Array de evaluaciones"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Evaluaciones (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluaciones-desempeno?limite=20&nivel=Excelente",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluaciones-desempeno"],
+							"query": [
+								{
+									"key": "limite",
+									"value": "20",
+									"description": "Límite de resultados (default: 50)"
+								},
+								{
+									"key": "nivel",
+									"value": "Excelente",
+									"description": "Filtrar por nivel: Excelente, Muy Bueno, Bueno, Regular, Básico"
+								},
+								{
+									"key": "minPuntaje",
+									"value": "70",
+									"description": "Puntaje mínimo",
+									"disabled": true
+								},
+								{
+									"key": "maxPuntaje",
+									"value": "100",
+									"description": "Puntaje máximo",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista evaluaciones con filtros opcionales.\n\n**Query params:**\n- `limite`: Número máximo de resultados (default: 50)\n- `nivel`: Filtrar por nivel de desempeño\n- `minPuntaje`: Puntaje global mínimo\n- `maxPuntaje`: Puntaje global máximo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Evaluaciones Masivas",
+			"item": [
+				{
+					"name": "Evaluar Lote de Empleados",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedulas\": [\n        \"1234567890\",\n        \"0987654321\",\n        \"1122334455\"\n    ],\n    \"guardar\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/evaluar-lote",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "evaluar-lote"]
+						},
+						"description": "Evalúa múltiples empleados en una sola operación.\n\n**Body requerido:**\n- `cedulas`: Array de cédulas a evaluar\n\n**Body opcional:**\n- `pesos`: Pesos personalizados para todos (deben sumar 100)\n- `guardar`: true para guardar las evaluaciones en el historial (default: false)\n\n**Respuesta:**\n- `guardado`: Si se guardaron las evaluaciones\n- `estadisticas`:\n  - `evaluados`: Cantidad de empleados evaluados exitosamente\n  - `errores`: Cantidad de errores\n  - `promedioGlobal`: Promedio del lote\n  - `distribucion`: Distribución por niveles\n- `resultados`: Array con el resumen de cada evaluación\n- `errores`: Array de errores (si los hay)"
+					},
+					"response": []
+				},
+				{
+					"name": "Evaluar y Guardar Lote",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedulas\": [\n        \"1234567890\",\n        \"0987654321\"\n    ],\n    \"pesos\": {\n        \"logros\": 30,\n        \"certificaciones\": 20,\n        \"actitud\": 20,\n        \"antiguedad\": 10,\n        \"titulacion\": 20\n    },\n    \"guardar\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/evaluar-lote",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "evaluar-lote"]
+						},
+						"description": "Evalúa múltiples empleados con pesos personalizados y guarda los resultados.\n\nÚtil para evaluaciones periódicas de equipos o departamentos."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rankings y Estadísticas",
+			"item": [
+				{
+					"name": "Ranking de Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/ranking?limite=20&criterio=puntajeGlobal&orden=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "ranking"],
+							"query": [
+								{
+									"key": "limite",
+									"value": "20",
+									"description": "Cantidad de empleados a mostrar (default: 20)"
+								},
+								{
+									"key": "criterio",
+									"value": "puntajeGlobal",
+									"description": "Criterio de ordenamiento"
+								},
+								{
+									"key": "orden",
+									"value": "desc",
+									"description": "Orden: asc o desc (default: desc)"
+								}
+							]
+						},
+						"description": "Genera un ranking de empleados basado en su desempeño.\n\n**Query params:**\n- `limite`: Cantidad de empleados a mostrar (default: 20)\n- `criterio`: Criterio de ordenamiento\n  - `puntajeGlobal` (default)\n  - `puntajeLogros`\n  - `puntajeCertificaciones`\n  - `puntajeActitud`\n  - `puntajeAntiguedad`\n  - `puntajeTitulacion`\n- `orden`: 'asc' o 'desc' (default: 'desc')\n\n**Respuesta:**\n- `criterioOrdenamiento`: Criterio usado\n- `totalEmpleados`: Total de empleados evaluados\n- `estadisticas`: Estadísticas generales del ranking\n- `ranking`: Array ordenado de empleados con sus puntajes"
+					},
+					"response": []
+				},
+				{
+					"name": "Ranking por Logros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/ranking?limite=10&criterio=puntajeLogros&orden=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "ranking"],
+							"query": [
+								{
+									"key": "limite",
+									"value": "10"
+								},
+								{
+									"key": "criterio",
+									"value": "puntajeLogros"
+								},
+								{
+									"key": "orden",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Top 10 empleados con mejores logros."
+					},
+					"response": []
+				},
+				{
+					"name": "Ranking por Certificaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/ranking?limite=10&criterio=puntajeCertificaciones&orden=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "ranking"],
+							"query": [
+								{
+									"key": "limite",
+									"value": "10"
+								},
+								{
+									"key": "criterio",
+									"value": "puntajeCertificaciones"
+								},
+								{
+									"key": "orden",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Top 10 empleados con más certificaciones."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Evaluación",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/evaluacion-desempeno/registro/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["evaluacion-desempeno", "registro", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{evaluacionId}}",
+									"description": "ID de la evaluación a eliminar"
+								}
+							]
+						},
+						"description": "Elimina una evaluación guardada del historial.\n\n**Parámetros:**\n- `id`: ID de la evaluación (obtenido al guardar)\n\n**Advertencia:** Esta operación es irreversible.\n\n**Respuesta:**\n- `mensaje`: Confirmación de eliminación\n- `id`: ID de la evaluación eliminada"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
