@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "cail-empresas-2024",
+		"name": "CAIL - Servicio de Empresas",
+		"description": "Colección de endpoints para el microservicio de Empresas de CAIL.\n\nEste servicio gestiona la información de empresas registradas, incluyendo la creación automática de usuarios para autenticación.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3001)\n\n## Características principales\n- Al crear una empresa, se crea automáticamente un usuario para login\n- Gestión de múltiples usuarios por empresa\n- Búsqueda por sector industrial",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://empresas-service-639327610992.us-central1.run.app/",
+			"type": "string"
+		},
+		{
+			"key": "ruc",
+			"value": "1234567890001",
+			"type": "string"
+		},
+		{
+			"key": "usuarioId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio de empresas."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestión de Empresas",
+			"item": [
+				{
+					"name": "Listar Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empresas",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas"]
+						},
+						"description": "Lista todas las empresas registradas en el sistema.\n\n**Respuesta:**\n- Array de empresas con todos sus datos\n- Cada empresa incluye `id` (RUC) y campos de información"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Empresa por RUC",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa (13 dígitos)"
+								}
+							]
+						},
+						"description": "Obtiene una empresa específica por su RUC.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa (13 dígitos)\n\n**Respuesta:**\n- Datos completos de la empresa\n- `id`: RUC de la empresa"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Empresa",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('ruc', jsonData.id);",
+									"    pm.collectionVariables.set('usuarioId', jsonData.usuarioId);",
+									"    console.log('Empresa creada con RUC: ' + jsonData.id);",
+									"    console.log('Usuario creado con ID: ' + jsonData.usuarioId);",
+									"    console.log('Credenciales: ' + JSON.stringify(jsonData.credenciales));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ruc\": \"1234567890001\",\n    \"razonSocial\": \"Empresa Ejemplo S.A.\",\n    \"direccion\": \"Av. Principal 456, Quito\",\n    \"telefono\": \"022345678\",\n    \"email\": \"contacto@empresaejemplo.com\",\n    \"sectorIndustrial\": \"Tecnología\",\n    \"actividad\": 1,\n    \"cedulaRepresentante\": \"1234567890\",\n    \"nombreRepresentante\": \"Juan Carlos Pérez\",\n    \"idAdministrador\": null,\n    \"creadoPor\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas"]
+						},
+						"description": "Crea una nueva empresa y automáticamente un usuario para autenticación.\n\n**Campos requeridos:**\n- `ruc`: RUC de la empresa (13 dígitos)\n- `razonSocial`: Razón social de la empresa\n- `email`: Correo electrónico de contacto\n- `cedulaRepresentante`: Cédula del representante legal\n- `nombreRepresentante`: Nombre del representante legal\n\n**Campos opcionales:**\n- `direccion`: Dirección de la empresa\n- `telefono`: Teléfono de contacto\n- `sectorIndustrial`: Sector de la industria\n- `actividad`: Código de actividad económica\n- `idAdministrador`: ID del administrador asignado\n- `password`: Contraseña personalizada (si no se envía, se genera automáticamente)\n- `creadoPor`: Usuario que crea el registro\n\n**Comportamiento:**\n- Crea documento en colección `empresa`\n- Crea usuario en colección `users` con tipo 'empresa'\n- Genera contraseña segura si no se proporciona\n\n**Respuesta:**\n- `id`: RUC de la empresa\n- `usuarioId`: ID del usuario creado\n- `credenciales`: Cédula y contraseña para login"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Empresa (con password personalizado)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ruc\": \"9876543210001\",\n    \"razonSocial\": \"Tech Solutions S.A.\",\n    \"direccion\": \"Calle Innovación 789, Guayaquil\",\n    \"telefono\": \"042987654\",\n    \"email\": \"info@techsolutions.com\",\n    \"sectorIndustrial\": \"Tecnología\",\n    \"cedulaRepresentante\": \"0987654321\",\n    \"nombreRepresentante\": \"María García López\",\n    \"password\": \"MiPasswordSeguro123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas"]
+						},
+						"description": "Ejemplo de creación de empresa con contraseña personalizada.\n\n**Nota:** La contraseña debe cumplir requisitos de seguridad."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Empresa",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"direccion\": \"Nueva Dirección 123, Cuenca\",\n    \"telefono\": \"073456789\",\n    \"email\": \"nuevo@empresaejemplo.com\",\n    \"sectorIndustrial\": \"Tecnología e Innovación\",\n    \"estado\": \"activo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Actualiza datos de una empresa existente.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa a actualizar\n\n**Campos actualizables:**\n- `razonSocial`: Razón social\n- `direccion`: Dirección\n- `telefono`: Teléfono\n- `email`: Correo electrónico (también actualiza en users)\n- `sectorIndustrial`: Sector industrial\n- `actividad`: Código de actividad\n- `idAdministrador`: ID del administrador\n- `estado`: Estado de la empresa\n\n**Nota:** Si se actualiza el email, también se actualiza en el usuario asociado.\n\n**Respuesta:**\n- `id`: RUC de la empresa\n- `actualizado`: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Contraseña de Empresa",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nuevaPassword\": \"NuevaPasswordSegura456!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc/password",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc", "password"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Actualiza la contraseña del usuario principal de la empresa.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Campos opcionales:**\n- `nuevaPassword`: Nueva contraseña (si no se envía, se genera automáticamente)\n\n**Comportamiento:**\n- Actualiza la contraseña en la colección `users`\n- Marca `primerLogin: true` para forzar cambio\n\n**Respuesta:**\n- `id`: RUC de la empresa\n- `passwordGenerado`: Nueva contraseña (guardar, no se muestra de nuevo)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Contraseña (auto-generada)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc/password",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc", "password"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Genera automáticamente una nueva contraseña segura.\n\nÚtil para resetear contraseñas olvidadas."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Empresa",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Elimina una empresa y su usuario asociado.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa a eliminar\n\n**Comportamiento:**\n- Elimina documento de la colección `empresa`\n- Elimina usuario asociado de la colección `users`\n- Operación atómica (batch)\n\n**Advertencia:** Esta operación es irreversible.\n\n**Respuesta:**\n- `id`: RUC de la empresa eliminada\n- `eliminado`: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Empresas por Sector",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empresas/sector/:sector",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", "sector", ":sector"],
+							"variable": [
+								{
+									"key": "sector",
+									"value": "Tecnología",
+									"description": "Sector industrial a buscar"
+								}
+							]
+						},
+						"description": "Busca empresas por sector industrial.\n\n**Parámetros:**\n- `sector`: Nombre del sector industrial\n\n**Ejemplos de sectores:**\n- Tecnología\n- Manufactura\n- Servicios\n- Comercio\n- Agricultura\n- Construcción\n\n**Respuesta:**\n- Array de empresas que pertenecen al sector especificado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios de Empresa",
+			"item": [
+				{
+					"name": "Agregar Usuario a Empresa",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('usuarioId', jsonData.id);",
+									"    console.log('Usuario creado con ID: ' + jsonData.id);",
+									"    console.log('Credenciales: ' + JSON.stringify(jsonData.credenciales));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1122334455\",\n    \"nombre\": \"Ana Martínez\",\n    \"email\": \"ana.martinez@empresaejemplo.com\",\n    \"rol\": \"rrhh\",\n    \"creadoPor\": \"EMPRESA\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc", "usuarios"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Agrega un usuario adicional a una empresa existente.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Campos requeridos:**\n- `cedula`: Cédula del nuevo usuario\n- `nombre`: Nombre completo del usuario\n- `email`: Correo electrónico\n\n**Campos opcionales:**\n- `rol`: Rol del usuario en la empresa (default: 'usuario')\n- `password`: Contraseña personalizada (si no se envía, se genera automáticamente)\n- `creadoPor`: Usuario que crea el registro\n\n**Roles sugeridos:**\n- `admin`: Administrador de la empresa\n- `rrhh`: Recursos humanos\n- `usuario`: Usuario estándar\n\n**Respuesta:**\n- `id`: ID del usuario creado\n- `credenciales`: Cédula y contraseña para login"
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar Usuario (con password)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"5566778899\",\n    \"nombre\": \"Carlos López\",\n    \"email\": \"carlos.lopez@empresaejemplo.com\",\n    \"rol\": \"admin\",\n    \"password\": \"PasswordUsuario123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc", "usuarios"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Ejemplo de creación de usuario con contraseña personalizada y rol de administrador."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Usuarios de Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empresas/:ruc/usuarios",
+							"host": ["{{baseUrl}}"],
+							"path": ["empresas", ":ruc", "usuarios"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{ruc}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Lista todos los usuarios asociados a una empresa.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Respuesta:**\n- Array de usuarios de la empresa\n- Cada usuario incluye todos sus datos EXCEPTO la contraseña\n\n**Campos por usuario:**\n- `id`: ID del usuario\n- `cedula`: Cédula del usuario\n- `nombre`: Nombre completo\n- `email`: Correo electrónico\n- `tipoUsuario`: 'empresa'\n- `empresaRUC`: RUC de la empresa\n- `rol`: Rol en la empresa\n- `activo`: Estado del usuario\n- `primerLogin`: Si debe cambiar contraseña\n- `fechaCreacion`: Fecha de creación\n- `ultimoLogin`: Último acceso"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

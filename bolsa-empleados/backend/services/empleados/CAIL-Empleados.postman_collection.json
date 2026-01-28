@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "cail-empleados-2024",
+		"name": "CAIL - Servicio de Empleados",
+		"description": "Colección de endpoints para el microservicio de Empleados de CAIL.\n\nEste servicio gestiona la información de empleados, incluyendo sus datos personales, historial laboral y competencias.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:8080)\n\n## Estructura de datos\n- **Empleado**: Datos personales y profesionales\n- **Historial Laboral**: Experiencia laboral previa (subcolección)\n- **Competencias**: Habilidades y conocimientos (subcolección)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://empleados-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "cedula",
+			"value": "1234567890",
+			"type": "string"
+		},
+		{
+			"key": "idHistorial",
+			"value": "hist001",
+			"type": "string"
+		},
+		{
+			"key": "idCompetencias",
+			"value": "comp001",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio de empleados."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestión de Empleados",
+			"item": [
+				{
+					"name": "Listar Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados"]
+						},
+						"description": "Lista todos los empleados registrados en el sistema.\n\n**Respuesta:**\n- Array de empleados con sus datos completos\n- Cada empleado incluye `id` (cédula) y todos sus campos"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Perfil Completo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('cedula', jsonData.idEmpleado);",
+									"    console.log('Empleado creado con cédula: ' + jsonData.idEmpleado);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1234567890\",\n    \"nombres\": \"Juan Carlos\",\n    \"apellidos\": \"Pérez García\",\n    \"email\": \"juan.perez@email.com\",\n    \"telefono\": \"0991234567\",\n    \"direccion\": \"Av. Principal 123, Quito\",\n    \"fechaNacimiento\": \"1990-05-15\",\n    \"genero\": \"Masculino\",\n    \"estadoCivil\": \"Soltero\",\n    \"nivelEducacion\": \"Superior\",\n    \"tituloAcademico\": \"Ingeniero en Sistemas\",\n    \"estadoDisponibilidad\": \"Disponible\",\n    \"salarioEsperado\": 1500,\n    \"modalidadPreferida\": \"Híbrido\",\n    \"historiaLaboral\": {\n        \"empresa\": \"Tech Solutions S.A.\",\n        \"cargo\": \"Desarrollador Junior\",\n        \"fechaInicio\": \"2018-03-01\",\n        \"fechaFin\": \"2022-12-31\",\n        \"descripcion\": \"Desarrollo de aplicaciones web con React y Node.js\",\n        \"motivoSalida\": \"Crecimiento profesional\"\n    },\n    \"competencias\": {\n        \"habilidadesTecnicas\": [\"JavaScript\", \"React\", \"Node.js\", \"SQL\"],\n        \"habilidadesBlandas\": [\"Trabajo en equipo\", \"Comunicación\", \"Resolución de problemas\"],\n        \"idiomas\": [{\"idioma\": \"Inglés\", \"nivel\": \"Intermedio\"}],\n        \"certificaciones\": [\"AWS Cloud Practitioner\"]\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empleados/perfil-completo",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", "perfil-completo"]
+						},
+						"description": "Crea un perfil completo de empleado incluyendo historial laboral y competencias.\n\n**Campos requeridos:**\n- `cedula`: Cédula del empleado (obligatorio)\n\n**Campos del empleado:**\n- `nombres`: Nombres del empleado\n- `apellidos`: Apellidos del empleado\n- `email`: Correo electrónico\n- `telefono`: Número de teléfono\n- `direccion`: Dirección de residencia\n- `fechaNacimiento`: Fecha de nacimiento\n- `genero`: Género\n- `estadoCivil`: Estado civil\n- `nivelEducacion`: Nivel de educación\n- `tituloAcademico`: Título académico\n- `estadoDisponibilidad`: Estado actual (Disponible, Colocado, etc.)\n- `salarioEsperado`: Expectativa salarial\n- `modalidadPreferida`: Modalidad de trabajo preferida\n\n**Subcolección historiaLaboral (opcional):**\n- `empresa`: Nombre de la empresa anterior\n- `cargo`: Cargo desempeñado\n- `fechaInicio`: Fecha de inicio\n- `fechaFin`: Fecha de fin\n- `descripcion`: Descripción del trabajo\n- `motivoSalida`: Razón de salida\n\n**Subcolección competencias (opcional):**\n- `habilidadesTecnicas`: Array de habilidades técnicas\n- `habilidadesBlandas`: Array de habilidades blandas\n- `idiomas`: Array de idiomas con nivel\n- `certificaciones`: Array de certificaciones\n\n**Respuesta:**\n- `idEmpleado`: Cédula del empleado creado\n- `creadoHistorial`: Boolean indicando si se creó historial\n- `creadoCompetencias`: Boolean indicando si se crearon competencias"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Empleado Simple",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"0987654321\",\n    \"nombres\": \"María Elena\",\n    \"apellidos\": \"López Rodríguez\",\n    \"email\": \"maria.lopez@email.com\",\n    \"telefono\": \"0987654321\",\n    \"estadoDisponibilidad\": \"Disponible\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empleados/perfil-completo",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", "perfil-completo"]
+						},
+						"description": "Crea un empleado con datos básicos, sin historial laboral ni competencias.\n\nÚtil para registro inicial rápido."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Empleado",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"telefono\": \"0999888777\",\n    \"direccion\": \"Nueva Dirección 456, Guayaquil\",\n    \"estadoDisponibilidad\": \"Disponible\",\n    \"salarioEsperado\": 1800\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Actualiza datos de un empleado existente.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado a actualizar\n\n**Comportamiento:**\n- Usa `merge: true`, solo actualiza los campos enviados\n- Los campos no enviados mantienen su valor actual\n\n**Respuesta:**\n- `id`: Cédula del empleado\n- `actualizado`: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Empleado",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Elimina un empleado del sistema.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado a eliminar\n\n**Advertencia:** Esta operación es irreversible. Las subcolecciones (historial laboral y competencias) pueden quedar huérfanas.\n\n**Respuesta:**\n- `id`: Cédula del empleado eliminado\n- `eliminado`: true"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Historial Laboral",
+			"item": [
+				{
+					"name": "Obtener Historial Laboral",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/historial-laboral",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "historial-laboral"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Obtiene todo el historial laboral de un empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Respuesta:**\n- Array de registros de historial laboral\n- Cada registro incluye `id` y todos los campos del historial"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Historial Laboral",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empresa\": \"Empresa Actualizada S.A.\",\n    \"cargo\": \"Desarrollador Senior\",\n    \"fechaInicio\": \"2019-01-15\",\n    \"fechaFin\": \"2023-06-30\",\n    \"descripcion\": \"Liderazgo de equipo de desarrollo. Implementación de arquitectura de microservicios.\",\n    \"motivoSalida\": \"Oferta laboral mejor\",\n    \"logros\": [\n        \"Reducción del 40% en tiempo de despliegue\",\n        \"Implementación de CI/CD\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/historial-laboral/:idHistorial",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "historial-laboral", ":idHistorial"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								},
+								{
+									"key": "idHistorial",
+									"value": "{{idHistorial}}",
+									"description": "ID del registro de historial"
+								}
+							]
+						},
+						"description": "Actualiza un registro de historial laboral.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n- `idHistorial`: ID del registro de historial (ej: hist001)\n\n**Campos actualizables:**\n- `empresa`: Nombre de la empresa\n- `cargo`: Cargo desempeñado\n- `fechaInicio`: Fecha de inicio\n- `fechaFin`: Fecha de fin\n- `descripcion`: Descripción del trabajo\n- `motivoSalida`: Razón de salida\n- `logros`: Array de logros destacados\n\n**Respuesta:**\n- `idHistorial`: ID del registro actualizado\n- `actualizado`: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Historial Laboral",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/historial-laboral/:idHistorial",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "historial-laboral", ":idHistorial"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								},
+								{
+									"key": "idHistorial",
+									"value": "{{idHistorial}}",
+									"description": "ID del registro de historial"
+								}
+							]
+						},
+						"description": "Elimina un registro de historial laboral.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n- `idHistorial`: ID del registro de historial\n\n**Respuesta:**\n- `idHistorial`: ID del registro eliminado\n- `eliminado`: true"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Competencias",
+			"item": [
+				{
+					"name": "Obtener Competencias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/competencias",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "competencias"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Obtiene todas las competencias de un empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Respuesta:**\n- Array de registros de competencias\n- Cada registro incluye `id` y todos los campos de competencias"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Competencias",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"habilidadesTecnicas\": [\n        \"JavaScript\",\n        \"TypeScript\",\n        \"React\",\n        \"Node.js\",\n        \"PostgreSQL\",\n        \"Docker\",\n        \"AWS\"\n    ],\n    \"habilidadesBlandas\": [\n        \"Liderazgo\",\n        \"Trabajo en equipo\",\n        \"Comunicación efectiva\",\n        \"Gestión del tiempo\",\n        \"Pensamiento crítico\"\n    ],\n    \"idiomas\": [\n        {\"idioma\": \"Español\", \"nivel\": \"Nativo\"},\n        {\"idioma\": \"Inglés\", \"nivel\": \"Avanzado\"},\n        {\"idioma\": \"Portugués\", \"nivel\": \"Básico\"}\n    ],\n    \"certificaciones\": [\n        \"AWS Solutions Architect Associate\",\n        \"Scrum Master Certified\",\n        \"Google Cloud Professional\"\n    ],\n    \"herramientas\": [\n        \"Git\",\n        \"Jira\",\n        \"Figma\",\n        \"VS Code\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/competencias/:idCompetencias",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "competencias", ":idCompetencias"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								},
+								{
+									"key": "idCompetencias",
+									"value": "{{idCompetencias}}",
+									"description": "ID del registro de competencias"
+								}
+							]
+						},
+						"description": "Actualiza las competencias de un empleado.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n- `idCompetencias`: ID del registro de competencias (ej: comp001)\n\n**Campos actualizables:**\n- `habilidadesTecnicas`: Array de habilidades técnicas\n- `habilidadesBlandas`: Array de habilidades blandas/soft skills\n- `idiomas`: Array de objetos con idioma y nivel\n- `certificaciones`: Array de certificaciones obtenidas\n- `herramientas`: Array de herramientas que domina\n\n**Respuesta:**\n- `idCompetencias`: ID del registro actualizado\n- `actualizado`: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Competencias",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/empleados/:cedula/competencias/:idCompetencias",
+							"host": ["{{baseUrl}}"],
+							"path": ["empleados", ":cedula", "competencias", ":idCompetencias"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								},
+								{
+									"key": "idCompetencias",
+									"value": "{{idCompetencias}}",
+									"description": "ID del registro de competencias"
+								}
+							]
+						},
+						"description": "Elimina un registro de competencias.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n- `idCompetencias`: ID del registro de competencias\n\n**Respuesta:**\n- `idCompetencias`: ID del registro eliminado\n- `eliminado`: true"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

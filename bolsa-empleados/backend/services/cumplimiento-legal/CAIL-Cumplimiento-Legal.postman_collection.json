@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "cail-cumplimiento-legal-2024",
+		"name": "CAIL - Servicio de Cumplimiento Legal",
+		"description": "Colección de endpoints para el microservicio de Cumplimiento Legal de CAIL.\n\nEste servicio gestiona la verificación de documentos legales, validación de cédulas y RUCs ecuatorianos, alertas de vencimiento y cumplimiento normativo de empleados y empresas.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3010)\n\n## Funcionalidades principales\n- Verificación de documentos de empleados\n- Verificación de documentos de empresas\n- Validación de cédulas y RUCs ecuatorianos\n- Alertas de vencimiento de documentos\n- Dashboard de cumplimiento general",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://cumplimiento-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "cedulaEmpleado",
+			"value": "1234567890",
+			"type": "string"
+		},
+		{
+			"key": "rucEmpresa",
+			"value": "1234567890001",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Información del Servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Obtiene información general del microservicio de Cumplimiento Legal."
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verificación de Empleados",
+			"item": [
+				{
+					"name": "Verificar Cumplimiento de Empleado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empleados/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empleados", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedulaEmpleado}}",
+									"description": "Cédula ecuatoriana del empleado (10 dígitos)"
+								}
+							]
+						},
+						"description": "Verifica el cumplimiento legal de un empleado específico.\n\n**Parámetros:**\n- `cedula`: Cédula ecuatoriana válida (10 dígitos)\n\n**Validaciones:**\n- Valida formato de cédula ecuatoriana\n- Verifica documentos requeridos del empleado\n\n**Respuesta:**\n- `empleadoCedula`: Cédula del empleado\n- `empleadoNombre`: Nombre completo\n- `verificacion`: Objeto con detalles de verificación\n  - `cumpleRequisitos`: Boolean\n  - `nivelCumplimiento`: Porcentaje (0-100)\n  - `documentosFaltantes`: Array de documentos pendientes\n  - `alertas`: Array de alertas activas\n- `verificacionId`: ID del registro de verificación\n\n**Nota:** La verificación se guarda en historial automáticamente"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Todos los Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empleados",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empleados"]
+						},
+						"description": "Verifica el cumplimiento legal de todos los empleados registrados.\n\n**Respuesta:**\n- `total`: Número de empleados verificados\n- `promedioNivelCumplimiento`: Promedio general de cumplimiento\n- `empleadosConProblemas`: Cantidad de empleados que no cumplen requisitos\n- `resultados`: Array con resumen por empleado"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Empleados (solo incompletos)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empleados?soloIncompletos=true&limite=50",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empleados"],
+							"query": [
+								{
+									"key": "soloIncompletos",
+									"value": "true",
+									"description": "Filtrar solo empleados con documentación incompleta"
+								},
+								{
+									"key": "limite",
+									"value": "50",
+									"description": "Límite de resultados (default: 100)"
+								}
+							]
+						},
+						"description": "Lista solo empleados que NO cumplen con los requisitos documentales.\n\n**Query params:**\n- `soloIncompletos`: 'true' para filtrar solo los que no cumplen\n- `limite`: Número máximo de resultados (default: 100)\n\n**Uso recomendado:**\n- Identificar empleados que necesitan actualizar documentación\n- Generar reportes de incumplimiento"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verificación de Empresas",
+			"item": [
+				{
+					"name": "Verificar Cumplimiento de Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empresas/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empresas", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{rucEmpresa}}",
+									"description": "RUC ecuatoriano de la empresa (13 dígitos)"
+								}
+							]
+						},
+						"description": "Verifica el cumplimiento legal de una empresa específica.\n\n**Parámetros:**\n- `ruc`: RUC ecuatoriano válido (13 dígitos)\n\n**Validaciones:**\n- Valida formato de RUC ecuatoriano\n- Verifica documentos requeridos de la empresa\n\n**Respuesta:**\n- `empresaRUC`: RUC de la empresa\n- `empresaNombre`: Razón social o nombre comercial\n- `verificacion`: Objeto con detalles de verificación\n  - `cumpleRequisitos`: Boolean\n  - `nivelCumplimiento`: Porcentaje (0-100)\n  - `documentosFaltantes`: Array de documentos pendientes\n  - `alertas`: Array de alertas activas\n- `verificacionId`: ID del registro de verificación\n\n**Nota:** La verificación se guarda en historial automáticamente"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Todas las Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empresas",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empresas"]
+						},
+						"description": "Verifica el cumplimiento legal de todas las empresas registradas.\n\n**Respuesta:**\n- `total`: Número de empresas verificadas\n- `promedioNivelCumplimiento`: Promedio general de cumplimiento\n- `empresasConProblemas`: Cantidad de empresas que no cumplen requisitos\n- `resultados`: Array con resumen por empresa"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Empresas (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/empresas?soloIncompletos=true&limite=50",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "empresas"],
+							"query": [
+								{
+									"key": "soloIncompletos",
+									"value": "true",
+									"description": "Filtrar solo empresas con documentación incompleta"
+								},
+								{
+									"key": "tipoEmpresa",
+									"value": "Privada",
+									"description": "Filtrar por tipo de empresa",
+									"disabled": true
+								},
+								{
+									"key": "limite",
+									"value": "50",
+									"description": "Límite de resultados (default: 100)"
+								}
+							]
+						},
+						"description": "Lista empresas con filtros opcionales.\n\n**Query params:**\n- `soloIncompletos`: 'true' para filtrar solo las que no cumplen\n- `tipoEmpresa`: Filtrar por tipo de empresa\n- `limite`: Número máximo de resultados (default: 100)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Alertas y Vencimientos",
+			"item": [
+				{
+					"name": "Alertas de Vencimiento (30 días)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/alertas/vencimientos?dias=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "alertas", "vencimientos"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "30",
+									"description": "Días de anticipación para alertas (default: 30)"
+								}
+							]
+						},
+						"description": "Obtiene alertas de documentos próximos a vencer en los próximos 30 días.\n\n**Query params:**\n- `dias`: Número de días hacia adelante (default: 30)\n\n**Respuesta:**\n- `diasConsiderados`: Días usados en el filtro\n- `totalEntidadesConAlertas`: Número de entidades con alertas\n- `totalAlertas`: Total de alertas generadas\n- `alertas`: Array ordenado por urgencia\n  - `tipo`: 'empleado' o 'empresa'\n  - `id`: Cédula o RUC\n  - `nombre`: Nombre de la entidad\n  - `alertas`: Array de alertas con `diasRestantes`"
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas de Vencimiento (60 días)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/alertas/vencimientos?dias=60",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "alertas", "vencimientos"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "60",
+									"description": "Alertas para los próximos 60 días"
+								}
+							]
+						},
+						"description": "Obtiene alertas de documentos que vencen en los próximos 60 días.\n\nÚtil para planificación anticipada de renovaciones."
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas Solo Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/alertas/vencimientos?dias=30&tipo=empleados",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "alertas", "vencimientos"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "30"
+								},
+								{
+									"key": "tipo",
+									"value": "empleados",
+									"description": "Filtrar solo alertas de empleados"
+								}
+							]
+						},
+						"description": "Obtiene solo alertas de vencimiento de documentos de empleados.\n\n**Query params:**\n- `tipo`: 'empleados' para filtrar solo empleados"
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas Solo Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/alertas/vencimientos?dias=30&tipo=empresas",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "alertas", "vencimientos"],
+							"query": [
+								{
+									"key": "dias",
+									"value": "30"
+								},
+								{
+									"key": "tipo",
+									"value": "empresas",
+									"description": "Filtrar solo alertas de empresas"
+								}
+							]
+						},
+						"description": "Obtiene solo alertas de vencimiento de documentos de empresas.\n\n**Query params:**\n- `tipo`: 'empresas' para filtrar solo empresas"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Historial de Verificaciones",
+			"item": [
+				{
+					"name": "Historial General",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/historial",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "historial"]
+						},
+						"description": "Obtiene el historial de todas las verificaciones realizadas.\n\n**Respuesta:**\n- `total`: Número de verificaciones\n- `verificaciones`: Array ordenado por fecha (más reciente primero)"
+					},
+					"response": []
+				},
+				{
+					"name": "Historial (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/historial?limite=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "historial"],
+							"query": [
+								{
+									"key": "tipo",
+									"value": "empleado",
+									"description": "Filtrar por tipo: empleado o empresa",
+									"disabled": true
+								},
+								{
+									"key": "entidadId",
+									"value": "1234567890",
+									"description": "Filtrar por ID de entidad (cédula o RUC)",
+									"disabled": true
+								},
+								{
+									"key": "limite",
+									"value": "20",
+									"description": "Límite de resultados (default: 50)"
+								}
+							]
+						},
+						"description": "Obtiene historial de verificaciones con filtros.\n\n**Query params:**\n- `tipo`: 'empleado' o 'empresa'\n- `entidadId`: Cédula o RUC específico\n- `limite`: Número máximo de resultados (default: 50)"
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Empleado Específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/historial?tipo=empleado&entidadId={{cedulaEmpleado}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "historial"],
+							"query": [
+								{
+									"key": "tipo",
+									"value": "empleado"
+								},
+								{
+									"key": "entidadId",
+									"value": "{{cedulaEmpleado}}"
+								}
+							]
+						},
+						"description": "Obtiene el historial de verificaciones de un empleado específico.\n\nÚtil para auditorías y seguimiento de cumplimiento."
+					},
+					"response": []
+				},
+				{
+					"name": "Historial de Empresa Específica",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/historial?tipo=empresa&entidadId={{rucEmpresa}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "historial"],
+							"query": [
+								{
+									"key": "tipo",
+									"value": "empresa"
+								},
+								{
+									"key": "entidadId",
+									"value": "{{rucEmpresa}}"
+								}
+							]
+						},
+						"description": "Obtiene el historial de verificaciones de una empresa específica.\n\nÚtil para auditorías y seguimiento de cumplimiento."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validaciones en Línea",
+			"item": [
+				{
+					"name": "Validar Cédula Ecuatoriana",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/validar/cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "validar", "cedula"]
+						},
+						"description": "Valida si una cédula ecuatoriana tiene formato correcto.\n\n**Campos requeridos:**\n- `cedula`: Cédula a validar (10 dígitos)\n\n**Validaciones realizadas:**\n- Longitud de 10 dígitos\n- Solo números\n- Dígito verificador correcto (algoritmo módulo 10)\n- Código de provincia válido (01-24)\n\n**Respuesta:**\n- `cedula`: Cédula validada\n- `esValida`: Boolean indicando si es válida\n- `mensaje`: Descripción del resultado"
+					},
+					"response": []
+				},
+				{
+					"name": "Validar RUC Ecuatoriano",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ruc\": \"1234567890001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/validar/ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "validar", "ruc"]
+						},
+						"description": "Valida si un RUC ecuatoriano tiene formato correcto.\n\n**Campos requeridos:**\n- `ruc`: RUC a validar (13 dígitos)\n\n**Validaciones realizadas:**\n- Longitud de 13 dígitos\n- Solo números\n- Primeros 10 dígitos forman cédula válida (personas naturales)\n- O validación de RUC de sociedades (tercer dígito = 9)\n- Últimos 3 dígitos son el establecimiento (001, 002, etc.)\n\n**Respuesta:**\n- `ruc`: RUC validado\n- `esValido`: Boolean indicando si es válido\n- `mensaje`: Descripción del resultado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Dashboard General de Cumplimiento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/cumplimiento/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["cumplimiento", "dashboard"]
+						},
+						"description": "Obtiene un resumen ejecutivo del estado de cumplimiento legal.\n\n**Respuesta:**\n- `resumen`:\n  - `empleados`:\n    - `total`: Total de empleados\n    - `cumplen`: Empleados que cumplen requisitos\n    - `noCumplen`: Empleados con problemas\n    - `porcentajeCumplimiento`: % de cumplimiento\n    - `promedioNivel`: Promedio de nivel de cumplimiento\n  - `empresas`:\n    - `total`: Total de empresas\n    - `cumplen`: Empresas que cumplen requisitos\n    - `noCumplen`: Empresas con problemas\n    - `porcentajeCumplimiento`: % de cumplimiento\n    - `promedioNivel`: Promedio de nivel de cumplimiento\n- `nivelGeneralCumplimiento`: Nivel general combinado\n- `fechaGeneracion`: Timestamp del reporte\n\n**Uso recomendado:**\n- Monitoreo diario de cumplimiento\n- Reportes ejecutivos\n- KPIs de cumplimiento legal"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

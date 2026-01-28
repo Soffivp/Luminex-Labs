@@ -1,0 +1,770 @@
+{
+	"info": {
+		"_postman_id": "cail-matching-2024",
+		"name": "CAIL - Servicio de Matching",
+		"description": "Colección de endpoints para el microservicio de Matching de CAIL.\n\nEste servicio gestiona el proceso de matching (emparejamiento) entre empleados y vacantes, calculando el score de compatibilidad basado en competencias, nivel laboral y otros criterios.\n\n## Configuración\n- Base URL: `{{baseUrl}}` (por defecto: http://localhost:3005)\n\n## Estados de Matching\n- `pendiente`: Matching generado, pendiente de revisión\n- `precargada`: Matching auto-generado por el sistema\n- `aprobado`: Matching aprobado para continuar proceso\n- `rechazado`: Matching descartado\n- `contratado`: Empleado contratado para la vacante\n\n## Score de Coincidencia\n- 80-100: Excelente\n- 60-79: Bueno\n- 40-59: Moderado\n- 0-39: Bajo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://matching-service-639327610992.us-central1.run.app",
+			"type": "string"
+		},
+		{
+			"key": "matchingId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "cedula",
+			"value": "1234567890",
+			"type": "string"
+		},
+		{
+			"key": "vacanteId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "empresaRUC",
+			"value": "1234567890001",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Información General",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Verifica el estado de salud del servicio de matching."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CRUD de Matchings",
+			"item": [
+				{
+					"name": "Listar Matchings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings"]
+						},
+						"description": "Lista todos los matchings registrados.\n\n**Respuesta:**\n- Array de matchings ordenados por score (mayor a menor)"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Matchings (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings?estadoMatch=pendiente&minScore=50",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings"],
+							"query": [
+								{
+									"key": "estadoMatch",
+									"value": "pendiente",
+									"description": "Filtrar por estado"
+								},
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por empresa",
+									"disabled": true
+								},
+								{
+									"key": "empleadoCedula",
+									"value": "1234567890",
+									"description": "Filtrar por empleado",
+									"disabled": true
+								},
+								{
+									"key": "vacanteId",
+									"value": "VAC-001",
+									"description": "Filtrar por vacante",
+									"disabled": true
+								},
+								{
+									"key": "minScore",
+									"value": "50",
+									"description": "Score mínimo de coincidencia"
+								}
+							]
+						},
+						"description": "Lista matchings con filtros opcionales.\n\n**Query params:**\n- `estadoMatch`: Estado del matching\n- `empresaRUC`: RUC de la empresa\n- `empleadoCedula`: Cédula del empleado\n- `vacanteId`: ID de la vacante\n- `minScore`: Score mínimo de coincidencia"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Matching por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Obtiene un matching específico con recomendaciones.\n\n**Parámetros:**\n- `id`: ID del matching\n\n**Respuesta incluye:**\n- Datos del matching\n- `recomendaciones`: Sugerencias basadas en el análisis"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Matching Manual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('matchingId', jsonData.id);",
+									"    console.log('Matching creado con ID: ' + jsonData.id);",
+									"    console.log('Score: ' + jsonData.scoreCoincidencia);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empleadoCedula\": \"1234567890\",\n    \"vacanteId\": \"VAC-001\",\n    \"estadoMatch\": \"pendiente\",\n    \"observaciones\": \"Candidato recomendado por el área de RRHH\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings"]
+						},
+						"description": "Crea un matching manualmente entre un empleado y una vacante.\n\n**Campos requeridos:**\n- `empleadoCedula`: Cédula del empleado\n- `vacanteId`: ID de la vacante\n\n**Campos opcionales:**\n- `estadoMatch`: Estado inicial (default: 'pendiente')\n- `observaciones`: Notas adicionales\n\n**Comportamiento:**\n- Verifica que el empleado existe\n- Verifica que la vacante existe\n- Calcula automáticamente el score de coincidencia\n- Genera recomendaciones\n\n**Respuesta:**\n- `id`: ID del matching creado\n- `scoreCoincidencia`: Score calculado\n- `recomendaciones`: Sugerencias basadas en el análisis"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Matching",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"observaciones\": \"Actualización de observaciones del matching\",\n    \"propuestaId\": \"PROP-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Actualiza datos de un matching existente.\n\n**Parámetros:**\n- `id`: ID del matching\n\n**Campos actualizables:**\n- `estadoMatch`: Estado del matching\n- `observaciones`: Notas adicionales\n- `propuestaId`: ID de propuesta vinculada"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Matching",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Elimina un matching.\n\n**Parámetros:**\n- `id`: ID del matching\n\n**Restricción:** Solo se pueden eliminar matchings en estado 'pendiente'.\n\n**Respuesta:**\n- `eliminado`: true si fue eliminado exitosamente"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cambio de Estado",
+			"item": [
+				{
+					"name": "Cambiar Estado de Matching",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoMatch\": \"aprobado\",\n    \"observaciones\": \"Candidato aprobado para entrevista\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Cambia el estado de un matching.\n\n**Parámetros:**\n- `id`: ID del matching\n\n**Body requerido:**\n- `estadoMatch`: Nuevo estado\n\n**Estados válidos:**\n- `pendiente`: Pendiente de revisión\n- `precargada`: Auto-generado por sistema\n- `aprobado`: Aprobado (registra fecha de aprobación)\n- `rechazado`: Descartado\n- `contratado`: Empleado contratado (registra fecha de contratación)\n\n**Body opcional:**\n- `observaciones`: Notas sobre el cambio de estado"
+					},
+					"response": []
+				},
+				{
+					"name": "Aprobar Matching",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoMatch\": \"aprobado\",\n    \"observaciones\": \"Candidato seleccionado para siguiente fase\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}"
+								}
+							]
+						},
+						"description": "Aprueba un matching para continuar el proceso de selección."
+					},
+					"response": []
+				},
+				{
+					"name": "Rechazar Matching",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoMatch\": \"rechazado\",\n    \"observaciones\": \"Perfil no cumple requisitos mínimos de experiencia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}"
+								}
+							]
+						},
+						"description": "Rechaza un matching descartando al candidato."
+					},
+					"response": []
+				},
+				{
+					"name": "Marcar como Contratado",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estadoMatch\": \"contratado\",\n    \"observaciones\": \"Empleado contratado. Inicio: 2024-02-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}"
+								}
+							]
+						},
+						"description": "Marca el matching como contratado cuando el empleado es seleccionado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cálculo de Matching",
+			"item": [
+				{
+					"name": "Calcular Score de Matching",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empleadoCedula\": \"1234567890\",\n    \"vacanteId\": \"VAC-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/calcular",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "calcular"]
+						},
+						"description": "Calcula el score de coincidencia entre un empleado y una vacante sin guardar.\n\n**Body requerido:**\n- `empleadoCedula`: Cédula del empleado\n- `vacanteId`: ID de la vacante\n\n**Respuesta:**\n- `scoreCoincidencia`: Score calculado (0-100)\n- `detalles`: Desglose del cálculo\n- `analisis`: Comparación detallada de competencias y nivel\n- `recomendaciones`: Sugerencias basadas en el análisis\n\n**Útil para:** Previsualizar compatibilidad antes de crear el matching"
+					},
+					"response": []
+				},
+				{
+					"name": "Generar Matchings para Vacante",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minScore\": 40,\n    \"limite\": 15,\n    \"guardar\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/vacante/:vacanteId/generar",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "vacante", ":vacanteId", "generar"],
+							"variable": [
+								{
+									"key": "vacanteId",
+									"value": "{{vacanteId}}",
+									"description": "ID de la vacante"
+								}
+							]
+						},
+						"description": "Busca empleados compatibles para una vacante específica.\n\n**Parámetros:**\n- `vacanteId`: ID de la vacante\n\n**Body opcional:**\n- `minScore`: Score mínimo de coincidencia (default: 30)\n- `limite`: Máximo de resultados (default: 20)\n- `guardar`: true para guardar matchings en BD (default: false)\n\n**Comportamiento:**\n- Busca empleados con estado 'Publicado'\n- Calcula score para cada uno\n- Filtra por score mínimo\n- Ordena por score descendente\n- Si `guardar: true`, crea matchings con estado 'precargada'\n\n**Respuesta:**\n- `totalEncontrados`: Total de empleados compatibles\n- `matchings`: Array de matchings ordenados por score"
+					},
+					"response": []
+				},
+				{
+					"name": "Generar y Guardar Matchings para Vacante",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minScore\": 50,\n    \"limite\": 10,\n    \"guardar\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/vacante/:vacanteId/generar",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "vacante", ":vacanteId", "generar"],
+							"variable": [
+								{
+									"key": "vacanteId",
+									"value": "{{vacanteId}}"
+								}
+							]
+						},
+						"description": "Genera y guarda matchings para una vacante.\n\nLos matchings se guardan con estado 'precargada' para revisión posterior."
+					},
+					"response": []
+				},
+				{
+					"name": "Generar Matchings para Empleado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minScore\": 40,\n    \"limite\": 15,\n    \"guardar\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/empleado/:cedula/generar",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "empleado", ":cedula", "generar"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Busca vacantes compatibles para un empleado específico.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Body opcional:**\n- `minScore`: Score mínimo de coincidencia (default: 30)\n- `limite`: Máximo de resultados (default: 20)\n- `guardar`: true para guardar matchings en BD (default: false)\n\n**Comportamiento:**\n- Busca vacantes con estado 'Activa'\n- Calcula score para cada una\n- Filtra por score mínimo\n- Ordena por score descendente\n\n**Respuesta:**\n- `totalEncontrados`: Total de vacantes compatibles\n- `matchings`: Array de matchings ordenados por score"
+					},
+					"response": []
+				},
+				{
+					"name": "Generar y Guardar Matchings para Empleado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minScore\": 50,\n    \"limite\": 10,\n    \"guardar\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/empleado/:cedula/generar",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "empleado", ":cedula", "generar"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}"
+								}
+							]
+						},
+						"description": "Genera y guarda matchings de vacantes para un empleado.\n\nÚtil para sugerir oportunidades laborales al empleado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Consultas Específicas",
+			"item": [
+				{
+					"name": "Matchings por Empleado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/empleado/:cedula",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "empleado", ":cedula"],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}",
+									"description": "Cédula del empleado"
+								}
+							]
+						},
+						"description": "Lista todos los matchings de un empleado específico.\n\n**Parámetros:**\n- `cedula`: Cédula del empleado\n\n**Query params opcionales:**\n- `estadoMatch`: Filtrar por estado"
+					},
+					"response": []
+				},
+				{
+					"name": "Matchings por Empleado (filtrado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/empleado/:cedula?estadoMatch=aprobado",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "empleado", ":cedula"],
+							"query": [
+								{
+									"key": "estadoMatch",
+									"value": "aprobado"
+								}
+							],
+							"variable": [
+								{
+									"key": "cedula",
+									"value": "{{cedula}}"
+								}
+							]
+						},
+						"description": "Lista matchings aprobados de un empleado."
+					},
+					"response": []
+				},
+				{
+					"name": "Matchings por Vacante",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/vacante/:vacanteId",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "vacante", ":vacanteId"],
+							"variable": [
+								{
+									"key": "vacanteId",
+									"value": "{{vacanteId}}",
+									"description": "ID de la vacante"
+								}
+							]
+						},
+						"description": "Lista todos los matchings para una vacante específica.\n\n**Parámetros:**\n- `vacanteId`: ID de la vacante\n\n**Query params opcionales:**\n- `estadoMatch`: Filtrar por estado\n- `minScore`: Score mínimo"
+					},
+					"response": []
+				},
+				{
+					"name": "Matchings por Vacante (filtrado)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/vacante/:vacanteId?estadoMatch=pendiente&minScore=60",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "vacante", ":vacanteId"],
+							"query": [
+								{
+									"key": "estadoMatch",
+									"value": "pendiente"
+								},
+								{
+									"key": "minScore",
+									"value": "60"
+								}
+							],
+							"variable": [
+								{
+									"key": "vacanteId",
+									"value": "{{vacanteId}}"
+								}
+							]
+						},
+						"description": "Lista matchings pendientes con score >= 60 para una vacante."
+					},
+					"response": []
+				},
+				{
+					"name": "Matchings por Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/empresa/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "empresa", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{empresaRUC}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Lista todos los matchings de una empresa.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Query params opcionales:**\n- `estadoMatch`: Filtrar por estado"
+					},
+					"response": []
+				},
+				{
+					"name": "Matchings Pendientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/pendientes?limite=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "pendientes"],
+							"query": [
+								{
+									"key": "empresaRUC",
+									"value": "1234567890001",
+									"description": "Filtrar por empresa",
+									"disabled": true
+								},
+								{
+									"key": "limite",
+									"value": "30",
+									"description": "Límite de resultados (default: 50)"
+								}
+							]
+						},
+						"description": "Lista matchings en estado pendiente.\n\n**Query params:**\n- `empresaRUC`: Filtrar por empresa (opcional)\n- `limite`: Máximo de resultados (default: 50)"
+					},
+					"response": []
+				},
+				{
+					"name": "Top Matchings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/top?limite=10&minScore=70",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "top"],
+							"query": [
+								{
+									"key": "limite",
+									"value": "10",
+									"description": "Cantidad de resultados (default: 10)"
+								},
+								{
+									"key": "minScore",
+									"value": "70",
+									"description": "Score mínimo (default: 70)"
+								}
+							]
+						},
+						"description": "Lista los matchings con mejores scores.\n\n**Query params:**\n- `limite`: Cantidad de resultados (default: 10)\n- `minScore`: Score mínimo para incluir (default: 70)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estadísticas",
+			"item": [
+				{
+					"name": "Estadísticas Generales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/estadisticas",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "estadisticas"]
+						},
+						"description": "Obtiene estadísticas generales de todos los matchings.\n\n**Respuesta:**\n- `totalMatchings`: Total de matchings\n- `porEstado`: Distribución por estado\n- `scores`: Estadísticas de scores (promedio, máximo, mínimo)\n- `rangos`: Distribución por rangos de score (excelente, bueno, moderado, bajo)"
+					},
+					"response": []
+				},
+				{
+					"name": "Resumen por Empresa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/matchings/resumen/empresa/:ruc",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", "resumen", "empresa", ":ruc"],
+							"variable": [
+								{
+									"key": "ruc",
+									"value": "{{empresaRUC}}",
+									"description": "RUC de la empresa"
+								}
+							]
+						},
+						"description": "Obtiene resumen de matchings de una empresa específica.\n\n**Parámetros:**\n- `ruc`: RUC de la empresa\n\n**Respuesta:**\n- `totalMatchings`: Total de matchings de la empresa\n- `porEstado`: Distribución por estado\n- `promedioScore`: Promedio de scores\n- `mejorScore`: Score más alto"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Propuestas",
+			"item": [
+				{
+					"name": "Vincular Propuesta a Matching",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"propuestaId\": \"PROP-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/matchings/:id/propuesta",
+							"host": ["{{baseUrl}}"],
+							"path": ["matchings", ":id", "propuesta"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{matchingId}}",
+									"description": "ID del matching"
+								}
+							]
+						},
+						"description": "Vincula una propuesta laboral a un matching existente.\n\n**Parámetros:**\n- `id`: ID del matching\n\n**Body requerido:**\n- `propuestaId`: ID de la propuesta a vincular\n\n**Comportamiento:**\n- Vincula la propuesta al matching\n- Cambia automáticamente el estado a 'aprobado'\n\n**Respuesta:**\n- `propuestaId`: ID de la propuesta vinculada"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

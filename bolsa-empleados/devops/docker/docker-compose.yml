@@ -1,0 +1,212 @@
+# devops/docker/docker-compose.yml
+version: '3.8'
+
+services:
+  # ==========================================
+  # API Gateway - Nginx
+  # ==========================================
+  nginx:
+    build: 
+      context: ../../backend/nginx
+      dockerfile: Dockerfile
+    container_name: bolsa-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - autenticacion-service
+      - sri-service
+      - registrocivil-service
+      - discord-service
+    networks:
+      - bolsa-network
+    restart: always
+    volumes:
+      - nginx_logs:/var/log/nginx
+      # Si tienes certificados SSL
+      # - ./certs:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - TZ=America/Guayaquil
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ==========================================
+  # Servicio de Autenticación
+  # ==========================================
+  autenticacion-service:
+    build:
+      context: ../../backend/services/autenticacion
+      dockerfile: Dockerfile
+      target: production
+    container_name: bolsa-autenticacion-prod
+    env_file:
+      - ../../.env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    networks:
+      - bolsa-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # ==========================================
+  # Servicio SRI
+  # ==========================================
+  sri-service:
+    build:
+      context: ../../backend/services/sri-service
+      dockerfile: Dockerfile
+      target: production
+    container_name: bolsa-sri-prod
+    env_file:
+      - ../../.env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+    networks:
+      - bolsa-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # ==========================================
+  # Servicio Registro Civil
+  # ==========================================
+  registrocivil-service:
+    build:
+      context: ../../backend/services/registrocivil-service
+      dockerfile: Dockerfile
+      target: production
+    container_name: bolsa-registrocivil-prod
+    env_file:
+      - ../../.env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+    networks:
+      - bolsa-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # ==========================================
+  # Servicio Discord
+  # ==========================================
+  discord-service:
+    build:
+      context: ../../backend/services/discord-service
+      dockerfile: Dockerfile
+      target: production
+    container_name: bolsa-discord-prod
+    env_file:
+      - ../../.env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+    networks:
+      - bolsa-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ==========================================
+  # Redis
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: bolsa-redis-prod
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - bolsa-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  bolsa-network:
+    driver: bridge
+    name: bolsa-network-prod
+
+volumes:
+  nginx_logs:
+  redis_data:

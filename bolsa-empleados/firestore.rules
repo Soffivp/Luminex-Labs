@@ -1,0 +1,227 @@
+rules_version = '2';
+
+// Reglas de seguridad de Firestore para Bolsa de Empleados
+// Estas reglas protegen los datos en Firestore a nivel de base de datos
+// IMPORTANTE: Las APIs backend ya implementan autenticación JWT,
+// estas reglas son una capa adicional de seguridad
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // FUNCIONES HELPER
+    // ============================================
+
+    // Verifica si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verifica si el usuario es administrador
+    function isAdmin() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tipoUsuario == 'administrador';
+    }
+
+    // Verifica si el usuario es empresa
+    function isEmpresa() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tipoUsuario == 'empresa';
+    }
+
+    // Verifica si el usuario es empleado
+    function isEmpleado() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tipoUsuario == 'empleado';
+    }
+
+    // Verifica si el usuario puede acceder a un recurso específico
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ============================================
+    // COLECCIÓN: users (Usuarios del sistema)
+    // ============================================
+    match /users/{userId} {
+      // Solo administradores pueden listar usuarios
+      allow list: if isAdmin();
+
+      // Administradores pueden leer cualquier usuario
+      // Usuarios pueden leer su propio perfil
+      allow read: if isAdmin() || isOwner(userId);
+
+      // Solo administradores pueden crear usuarios
+      allow create: if isAdmin();
+
+      // Administradores pueden actualizar cualquier usuario
+      // Usuarios pueden actualizar su propio perfil (pero no cambiar tipoUsuario o activo)
+      allow update: if isAdmin() ||
+                      (isOwner(userId) &&
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['tipoUsuario', 'activo', 'empresaRUC']));
+
+      // Solo administradores pueden eliminar usuarios
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // COLECCIÓN: sessions (Sesiones de usuario)
+    // ============================================
+    match /sessions/{sessionId} {
+      // Solo el propietario de la sesión o admin puede leer
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      // Las sesiones se crean automáticamente en login (por backend)
+      // Solo permitir creación si es el propio usuario
+      allow create: if isAuthenticated();
+
+      // Solo el propietario puede actualizar su sesión
+      allow update: if isOwner(resource.data.userId);
+
+      // Solo el propietario o admin puede eliminar sesiones
+      allow delete: if isAdmin() || isOwner(resource.data.userId);
+    }
+
+    // ============================================
+    // COLECCIÓN: empresa (Empresas)
+    // ============================================
+    match /empresa/{empresaRUC} {
+      // Todos pueden listar empresas activas (para búsqueda)
+      allow list: if true;
+
+      // Todos pueden leer datos de empresas activas
+      allow read: if resource.data.estado == 'Activa' || isAdmin();
+
+      // Solo administradores pueden crear empresas
+      allow create: if isAdmin();
+
+      // Administradores o la misma empresa pueden actualizar
+      allow update: if isAdmin() || (isEmpresa() && isOwner(empresaRUC));
+
+      // Solo administradores pueden eliminar empresas
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // COLECCIÓN: empleado (Empleados)
+    // ============================================
+    match /empleado/{cedulaEmpleado} {
+      // Administradores y empresas pueden listar empleados
+      allow list: if isAdmin() || isEmpresa();
+
+      // Administradores, empresas y el mismo empleado pueden leer
+      allow read: if isAdmin() || isEmpresa() || isOwner(cedulaEmpleado);
+
+      // Solo empleados pueden crear su propio perfil, administradores pueden crear cualquiera
+      allow create: if isAdmin() || (isEmpleado() && isOwner(cedulaEmpleado));
+
+      // Administradores o el mismo empleado pueden actualizar
+      allow update: if isAdmin() || isOwner(cedulaEmpleado);
+
+      // Solo administradores pueden eliminar empleados
+      allow delete: if isAdmin();
+
+      // Sub-colecciones del empleado (historialLaboral, competencias)
+      match /historialLaboral/{historialId} {
+        allow read: if isAdmin() || isEmpresa() || isOwner(cedulaEmpleado);
+        allow write: if isAdmin() || isOwner(cedulaEmpleado);
+      }
+
+      match /competencias/{competenciaId} {
+        allow read: if isAdmin() || isEmpresa() || isOwner(cedulaEmpleado);
+        allow write: if isAdmin() || isOwner(cedulaEmpleado);
+      }
+    }
+
+    // ============================================
+    // COLECCIÓN: vacantes (Vacantes de empleo)
+    // ============================================
+    match /vacantes/{vacanteId} {
+      // Todos pueden listar vacantes activas
+      allow list: if true;
+
+      // Todos pueden leer vacantes activas
+      allow read: if resource.data.estado == 'Activa' || isAdmin() || isEmpresa();
+
+      // Solo empresas pueden crear vacantes (en su propia empresa)
+      allow create: if isEmpresa() || isAdmin();
+
+      // Solo la empresa propietaria o admin pueden actualizar
+      allow update: if isAdmin() || (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+
+      // Solo la empresa propietaria o admin pueden eliminar
+      allow delete: if isAdmin() || (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+    }
+
+    // ============================================
+    // COLECCIÓN: matching (Matchings entre empleados y vacantes)
+    // ============================================
+    match /matching/{matchingId} {
+      // Admin puede listar todo
+      // Empresas pueden ver matchings de sus vacantes
+      // Empleados pueden ver sus matchings
+      allow list: if isAdmin();
+
+      // Admin, empresa de la vacante, o empleado del matching pueden leer
+      allow read: if isAdmin() ||
+                    isOwner(resource.data.cedulaEmpleado) ||
+                    (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+
+      // Solo admin puede crear matchings (normalmente se crean por algoritmo)
+      allow create: if isAdmin();
+
+      // Admin, empresa o empleado pueden actualizar estado
+      allow update: if isAdmin() ||
+                      isOwner(resource.data.cedulaEmpleado) ||
+                      (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+
+      // Solo admin puede eliminar matchings
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // COLECCIÓN: colocaciones (Colocaciones laborales)
+    // ============================================
+    match /colocaciones/{colocacionId} {
+      // Admin puede listar todo
+      allow list: if isAdmin();
+
+      // Admin, empresa, o empleado involucrado pueden leer
+      allow read: if isAdmin() ||
+                    isOwner(resource.data.cedulaEmpleado) ||
+                    (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+
+      // Admin y empresa pueden crear colocaciones
+      allow create: if isAdmin() || isEmpresa();
+
+      // Admin y empresa pueden actualizar
+      allow update: if isAdmin() || (isEmpresa() && resource.data.empresaRUC == request.auth.uid);
+
+      // Solo admin puede eliminar
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // COLECCIÓN: audit_logs (Logs de auditoría)
+    // ============================================
+    match /audit_logs/{logId} {
+      // Solo admin puede leer logs
+      allow read: if isAdmin();
+
+      // Los logs se crean automáticamente por el sistema
+      allow create: if isAuthenticated();
+
+      // Los logs no se pueden modificar ni eliminar (inmutables)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================
+    // REGLA POR DEFECTO: DENEGAR TODO
+    // ============================================
+    // Cualquier colección no especificada explícitamente será denegada
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

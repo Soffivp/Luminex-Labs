@@ -1,0 +1,34 @@
+{
+  "name": "matching-service",
+  "version": "1.0.0",
+  "description": "Microservicio de matching empleado-vacante - Bolsa de Empleados CAIL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "docker:build": "docker build -t matching-service .",
+    "docker:run": "docker run -p 3005:8080 --env-file .env matching-service"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.2.0",
+    "@fastify/csrf-protection": "^7.1.0",
+    "@fastify/helmet": "^12.0.1",
+    "@fastify/jwt": "^9.1.0",
+    "@fastify/rate-limit": "^10.3.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "firebase-admin": "^13.6.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "CAIL",
+  "license": "ISC"
+}
