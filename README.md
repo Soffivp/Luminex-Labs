@@ -47,3 +47,9 @@ Desarrollar una aplicacion movil que gestione los perfiles de los empleados de a
 <img width="410" height="410" alt="image" src="https://github.com/user-attachments/assets/a229e7e6-4563-44d5-b5d8-9a3e6273ff4b"/>
 </p>
 
+
+## License
+
+This project is licensed under a proprietary license.
+All rights reserved. Unauthorized copying, modification, or distribution is strictly prohibited.
+
