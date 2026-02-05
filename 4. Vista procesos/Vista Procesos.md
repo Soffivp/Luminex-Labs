@@ -20,7 +20,9 @@ procesos y casos de uso en sistemas orientados a objetos.
 <h2>Diagramas de Secuencia</h2>
 <h3>Registro de Empresas</h3>
 
-<img width="870" height="440" alt="image" src="https://github.com/user-attachments/assets/003e43d4-3d9e-4f1a-90ef-c31f57762749" />
+<img width="460" height="348" alt="Imagen5" src="https://github.com/user-attachments/assets/a03ad0fc-3eb9-46eb-83b2-369c75ac26ba" />
+
+
 
 **Explicación:**
 Este diagrama describe cómo se agrega nuevas empresas en el sistema y ademas valida que los datos agregados sean correctos, es decir si cumplen con las restricciones y si estan agregados en el sistema del SRI.
@@ -31,7 +33,9 @@ Los pasos clave incluyen:
   - Enviar datos registrados.
 
 <h3>Registro de Empleados</h3>
-<img width="1888" height="1110" alt="image" src="https://github.com/user-attachments/assets/35d4d815-2ed3-4f3e-87bc-e8e3148f2562" />
+
+<img width="624" height="413" alt="Imagen7" src="https://github.com/user-attachments/assets/4e5ee117-ec93-4bff-b41d-646102dc514c" />
+
 
 **Explicación:**
 Este diagrama describe proceso de registro y evaluación de empleados senior en el sistema CAIL. La Empresa Emisora proporciona el historial laboral, competencias, certificaciones y logros del empleado. El sistema valida su identidad mediante el Registro Civil y calcula un puntaje global de efectividad laboral (0-100) evaluando cinco criterios ponderados: logros (20%), certificaciones (15%), actitud (25%), antigüedad (25%) y titulación (15%). Con base en este análisis, se genera un Informe de Ponderación que determina el nivel laboral del empleado (Junior/Mid-Level/Senior).
@@ -41,18 +45,10 @@ El flujo incluye:
   - Generar informe evaluacion del empleado.
   - Clasifica el estado del empleado.
 
-<h3>Evaluar Desempeño Y Registrar Nivel Laboral</h3>
-<img width="748" height="518" alt="image" src="https://github.com/user-attachments/assets/425af53b-6f37-4b9d-9ffb-5e4b180af24c" />
-
-**Explicación:**
-Este diagrama detalla el proceso automatizado de evaluación y clasificación de empleados.
-El flujo incluye:
-
-  - EvaluaciónDesempeño que analiza secuencialmente cinco dimensiones del perfil profesional.
-  - Clasifica al empleado en la categoría correspondiente.
-
 <h3> Consolidar Resultados, Asignar Puntaje y Confirmar</h3>
-<img width="1103" height="611" alt="image" src="https://github.com/user-attachments/assets/b6fae495-5ea3-4e99-9952-527243c009dd" />
+
+<img width="624" height="340" alt="Imagen8" src="https://github.com/user-attachments/assets/5d9c3708-8f0a-46ca-b6ab-852f957d0332" />
+
 
 **Explicación:**
 Este diagrama muestra el proceso de generación, validación y aceptación del Informe de Ponderación.
@@ -63,7 +59,9 @@ El flujo incluye:
   - La empresa confirma su aceptación del informe.
 
 <h3>Gestión de Coincidencias</h3>
-<img width="812" height="668" alt="image" src="https://github.com/user-attachments/assets/d430153d-274e-4171-94f2-25855f180d41" />
+
+<img width="1040" height="824" alt="Imagen9" src="https://github.com/user-attachments/assets/0fc25cbb-f4a9-4e88-a6ee-59005942b871" />
+
 
 **Explicación:**
 Este diagrama representa el proceso de búsqueda y filtrado de candidatos por parte de Empresas Receptoras.
@@ -74,7 +72,9 @@ El flujo incluye:
   - El sistema ordena los resultados presentando únicamente empleados con coincidencia mínima.
     
 <h3>Cobertura de Vacantes</h3>
-<img width="812" height="668" alt="image" src="https://github.com/user-attachments/assets/ff91e8cc-049e-4891-9d3e-03d700f7d6f3" />
+
+<img width="1040" height="824" alt="Imagen10" src="https://github.com/user-attachments/assets/7e3c5fbd-d1ad-4ce3-9dc0-33dac247f68f" />
+
 
 
 **Explicación:**
@@ -87,32 +87,10 @@ El flujo incluye:
   - El sistema notifica a la Empresa Emisora sobre el interés mostrado en sus empleados y alerta al Administrador para 
 seguimiento del proceso.
 
-<h3>Gestión de Matching</h3>
-<img width="1171" height="774" alt="image" src="https://github.com/user-attachments/assets/6ce2e8b2-c674-4840-868b-a81dddc1896b" />
-
-**Explicación:**
-Este diagrama describe el proceso automatizado y supervisado de emparejamiento entre empleados disponibles y vacantes activas.
-El flujo incluye:
-
-  - El Administrador ejecuta el matching, y el sistema recopila todas las vacantes activas y empleados disponibles.
-  - Para cada par vacante-empleado, el componente Matching realiza un análisis comparativo y calcula un score de coincidencia para cada combinación.
-  - El sistema actualiza las recomendaciones en 
- cada vacante y notifica a las Empresas Receptoras sobre nuevos candidatos sugeridos.
-
-<h3>Resolución de Discrepancias</h3>
-<img width="1428" height="791" alt="image" src="https://github.com/user-attachments/assets/b182f7fe-3c44-4e58-bac7-2fcd212a1307" />
-
-**Explicación:**
-Este diagrama representa el proceso de identificación y resolución de conflictos en el sistema CAIL.
-El flujo incluye:
-
-  - El Administrador consulta el módulo Conflicto que identifica automáticamente desajustes.
-  - El Administrador revisa cada conflicto, analiza el contexto completo y determina la acción correctiva apropiada.
-  - Se puede reasignar el empleado a otra vacante recalculando matchings alternativos, o contactar directamente a las Empresas Emisora y Receptora para aclaraciones.
-  - El Administrador documenta la resolución detalladamente, el sistema actualiza todos los estados afectados y notifica a las partes involucradas sobre las acciones tomadas. 
 
 <h3>Cumplimiento del Proceso Laboral</h3>
-<img width="1424" height="977" alt="image" src="https://github.com/user-attachments/assets/e8bef936-9bf5-43a3-bc90-bba6cf27c498" />
+
+<img width="637" height="408" alt="Imagen11" src="https://github.com/user-attachments/assets/0f2b82ea-e0d7-463d-a1e0-1f9bfb6449d4" />
 
 **Explicación:**
 Este diagrama detalla el proceso de validación y formalización de contrataciones exitosas.
