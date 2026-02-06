@@ -113,5 +113,184 @@ DevOps es una cultura, metodología y conjunto de prácticas que busca integrar 
     - Despliegue en Google Play.
     - Validación en entornos reales.
     - Configuración de monitoreo.
+
+  <h2>Árbol del Proyecto</h2>
+  <p>
+  El árbol de despliegue nos sirvió para visualizar de forma clara la estructura del proyecto, mostrando cómo se 
+  organizan los distintos componentes del sistema y cómo se distribuyen los archivos y carpetas según su responsabilidad.
+  </p>
+  <pre>
+    <code>
+.
+├── bolsa-empleados/
+├── │
+├── ├── frontend/
+├── │   ├── web/
+├── │   │   ├── public/
+├── │   │   ├── src/
+├── │   │   │   ├── assets/
+├── │   │   │   ├── components/
+├── │   │   │   │   ├── common/
+├── │   │   │   │   ├── forms/
+├── │   │   │   │   └── layout/
+├── │   │   │   ├── pages/
+├── │   │   │   │   ├── auth/
+├── │   │   │   │   ├── dashboard/
+├── │   │   │   │   ├── empresas/
+├── │   │   │   │   ├── empleados/
+├── │   │   │   │   ├── vacantes/
+├── │   │   │   │   ├── postulaciones/
+├── │   │   │   │   └── reportes/
+├── │   │   │   ├── services/
+├── │   │   │   │   ├── api.ts
+├── │   │   │   │   ├── auth.service.ts
+├── │   │   │   │   ├── empleados.service.ts
+├── │   │   │   │   ├── vacantes.service.ts
+├── │   │   │   │   └── matching.service.ts
+├── │   │   │   ├── hooks/
+├── │   │   │   ├── context/
+├── │   │   │   ├── routes/
+├── │   │   │   ├── utils/
+├── │   │   │   └── App.tsx
+├── │   │   └── package.json
+├── │   │
+├── │   └── mobile/
+├── │       ├── android/
+├── │       ├── ios/
+├── │       ├── src/
+├── │       │   ├── components/
+├── │       │   ├── screens/
+├── │       │   │   ├── auth/
+├── │       │   │   ├── home/
+├── │       │   │   ├── empleados/
+├── │       │   │   ├── vacantes/
+├── │       │   │   └── postulaciones/
+├── │       │   ├── navigation/
+├── │       │   ├── services/
+├── │       │   ├── context/
+├── │       │   ├── hooks/
+├── │       │   ├── hooks/
+├── │       │   └── App.tsx
+├── │       └── package.json
+├── │
+├── ├── frontend/
+├── │   ├── .expo/
+├── │   │   ├── types/
+├── │   │   └── devices.json
+├── │   ├── app/
+├── │   │   ├── app.tsx
+├── │   │   └── index.tsx
+├── │   └── src/
+├── │       ├── assets/
+├── │       │   ├── fonts/
+├── │       │   ├── logo/
+├── │       │   └── text/
+├── │       ├── components/
+├── │       ├── config/
+├── │       │   ├── components/
+├── │       │   ├── screens/
+├── │       │   │   ├── auth/
+├── │       │   │   ├── home/
+├── │       │   │   ├── empleados/
+├── │       │   │   ├── vacantes/
+├── │       │   │   └── postulaciones/
+├── │       │   ├── constant/
+├── │       │   ├── context/
+├── │       │   ├── hooks/
+├── │       │   ├── navigation/
+├── │       │   ├── screens/
+├── │       │   ├── hooks/
+├── │       │   └── App.tsx
+├── │       └── package.json
+├── │
+├── ├── backend/
+├── │   ├── api-gateway/
+├── │   │   ├── routes/
+├── │   │   ├── middlewares/
+├── │   │   ├── auth/
+├── │   │   └── gateway.config.js
+├── │   │
+├── │   ├── services/
+├── │   │   ├── autenticacion/
+├── │   │   │   ├── verificarRUC.js
+├── │   │   │   ├── verificarCEDULA.js
+├── │   │   │   └── auth.controller.js
+├── │   │   ├── empresas/
+├── │   │   │   ├── registroEmpresas.js
+├── │   │   │   ├── empresas.controller.js
+├── │   │   │   └── empresas.routes.js
+├── │   │   ├── empleados/
+├── │   │   │   ├── registroEmpleados.js
+├── │   │   │   ├── empleados.controller.js
+├── │   │   │   └── empleados.routes.js
+├── │   │   ├── cumplimiento-legal/
+├── │   │   │   └── cumplimientoLegal.js
+├── │   │   ├── evaluacion-desempeno/
+├── │   │   │   ├── evaluarDesempenoHistorico.js
+├── │   │   │   ├── evaluarNivelLaboral.js
+├── │   │   │   └── evaluacion.controller.js
+├── │   │   ├── vacantes/
+├── │   │   │   ├── coberturaVacantes.js
+├── │   │   │   ├── vacantes.controller.js
+├── │   │   │   └── vacantes.routes.js
+├── │   │   ├── matching/
+├── │   │   │   ├── matching.js
+├── │   │   │   ├── gestionCoincidencias.js
+├── │   │   │   └── matching.controller.js
+├── │   │   ├── colocacion-laboral/
+├── │   │   │   └── colocacionLaboral.js
+├── │   │   ├── proceso-laboral/
+├── │   │   │   └── procesoLaboral.js
+├── │   │   ├── monetizacion/
+├── │   │   │   ├── calcularComisiones.js
+├── │   │   │   └── monetizacion.controller.js
+├── │   │   └── reportes/
+├── │   │       ├── generarInformes.js
+├── │   │       └── reportes.controller.js
+├── │   │
+├── │   ├── shared/
+├── │   │   ├── utils/
+├── │   │   ├── constants/
+├── │   │   ├── errors/
+├── │   │   └── logger/
+├── │   │
+├── │   ├── server.js
+├── │   └── package.json
+├── │
+├── ├── database/
+├── │   └── firestore/
+├── │       ├── empresas.schema.json
+├── │       ├── empleados.schema.json
+├── │       ├── documentos.schema.json
+├── │       ├── evaluacionDesempeno.schema.json
+├── │       ├── informesPonderacion.schema.json
+├── │       ├── coincidencias.schema.json
+├── │       ├── matchings.schema.json
+├── │       ├── procesosLaboral.schema.json
+├── │       └── comisiones.schema.json
+├── │
+├── ├── integrations/
+├── │   ├── firebase-auth/
+├── │   ├── api-registro-civil/
+├── │   └── api-sri/
+├── │
+├── ├── devops/
+├── │   ├── docker/
+├── │   │   ├── Dockerfile.backend
+├── │   │   ├── Dockerfile.web
+├── │   │   └── Dockerfile.mobile
+├── │   ├── kubernetes/
+├── │   ├── ci-cd/
+├── │   └── nginx/
+├── │
+├── ├── docs/
+├── │   ├── arquitectura/
+├── │   ├── diagramas/
+├── │   ├── api/
+├── │   └── decisiones-arquitectura/
+├── │
+└── └── README.md
+  </code>
+  </pre>
   
-     
+
