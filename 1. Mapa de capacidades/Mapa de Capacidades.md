@@ -1,7 +1,7 @@
 <h1>Mapa de Capacidades</h1>
 <p>
   El mapa de capacidades  nos sirvió para poder visualziar y organizar todas las funcionalidades
-  que el sistema de la <strong>Cámara de Industrias de Loja (CAIL)<strong> debe ofrecer, 
+  que el sistema de la <strong>Cámara de Industrias de Loja (CAIL)</strong>strong> debe ofrecer, 
   así nos aseguramos de que cada proceso del negocio tengas las capacidedades técnicas 
   necesarisarias.
 </p>
@@ -20,7 +20,7 @@
 
 <h2>2. Evaluación y Ponderación de Talento</h2>
 <p>
-  Es necesario evidenciar el valor de cada empleado mediante criterios estandarizados, gracias a esta evaluación transparente, las empresas receptoras no tendrían confianza en los candidatos sugeridos, y el sistema perdería credibilidad como intermediario profesional.
+Es necesario evidenciar el valor de cada empleado mediante criterios estandarizados, sin esta evaluación transparente, las empresas receptoras no tendrían confianza en los candidatos sugeridos, y el sistema perdería credibilidad como intermediario profesional.
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@
 
 <h2>3. Matching y Colocación Laboral</h2>
 <p>
-  
+El matching automatizado con score de coincidencia elimina búsquedas manuales ineficientes y conecta el talento de los empleados con oportunidades relevantes en tiempo real, maximizando probabilidades de colocación exitosa.
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@
 
 <h2>4. Proceso Laboral y Monetización</h2>
 <p>
-  
+Garantiza que las colocaciones exitosas se materialicen legalmente y generen ingresos sostenibles para CAIL. Sin validación documental, cumplimiento legal y cálculo transparente de comisiones, el negocio no sería viable ni escalable.
 </p>
 <p align="center">
 <img width="1061" height="1870" alt="cap4" src="https://github.com/user-attachments/assets/7ad2b6c9-6173-4d6b-84b8-7a1f1a50220f" />
