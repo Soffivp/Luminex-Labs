@@ -19,6 +19,6 @@
   <li>Modelo de costos optimizado para aplicaciones en crecimiento</li>
 </ul>
 
-![DiagramaBD](https://github.com/user-attachments/assets/99df5393-d2c3-40c5-a936-3730cfdead39)
+![Diagramas UML (ArqSoft) - CAIL - BD - CAIL (2)](https://github.com/user-attachments/assets/5ceec5cc-c16c-4f75-84ba-654ed13d4944)
 
 
