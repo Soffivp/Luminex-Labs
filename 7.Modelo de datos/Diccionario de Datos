@@ -1,0 +1,7 @@
+<h1>Diccionario de Datos</h1>
+<h3>El modelo relacional es universalmente reconocido en la academia y la industria, 
+permitiendo visualizar con claridad las entidades del negocio, sus atributos y las relaciones que las conectan. 
+Sin embargo, la implementación técnica real utilizará Firebase Firestore la cual es una base de datos NoSQL orientada a 
+documentos, esta bd ofrece ventajas significativas para el sistema como: escalabilidad automática sin intervención manual, 
+sincronización de datos en tiempo real para notificaciones instantáneas, modelo de datos flexible que reduce la complejidad de consultas, 
+integración nativa con servicios de autenticación y almacenamiento en la nube y un modelo de costos optimizado para aplicaciones en crecimiento.<h3>
