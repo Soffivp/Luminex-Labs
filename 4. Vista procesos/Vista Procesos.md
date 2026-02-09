@@ -19,8 +19,7 @@ procesos y casos de uso en sistemas orientados a objetos.
 
 <h2>Diagramas de Secuencia</h2>
 <h3>Registro de Empresas</h3>
-
-<img width="460" height="348" alt="Imagen5" src="https://github.com/user-attachments/assets/a03ad0fc-3eb9-46eb-83b2-369c75ac26ba" />
+<img width="588" height="426" alt="3" src="https://github.com/user-attachments/assets/755c3aa9-8cc6-4eed-b26b-055821c05d5c" />
 
 
 
@@ -46,8 +45,7 @@ El flujo incluye:
   - Clasifica el estado del empleado.
 
 <h3> Consolidar Resultados, Asignar Puntaje y Confirmar</h3>
-
-<img width="624" height="340" alt="Imagen8" src="https://github.com/user-attachments/assets/5d9c3708-8f0a-46ca-b6ab-852f957d0332" />
+<img width="828" height="470" alt="5" src="https://github.com/user-attachments/assets/16c43810-96cc-4751-b0b9-c8ea8d73f802" />
 
 
 **Explicación:**
@@ -59,9 +57,7 @@ El flujo incluye:
   - La empresa confirma su aceptación del informe.
 
 <h3>Gestión de Coincidencias</h3>
-
-<img width="1040" height="824" alt="Imagen9" src="https://github.com/user-attachments/assets/0fc25cbb-f4a9-4e88-a6ee-59005942b871" />
-
+<img width="644" height="440" alt="4" src="https://github.com/user-attachments/assets/e3c90cf9-ab7a-468e-bd04-3277648a945c" />
 
 **Explicación:**
 Este diagrama representa el proceso de búsqueda y filtrado de candidatos por parte de Empresas Receptoras.
@@ -72,8 +68,7 @@ El flujo incluye:
   - El sistema ordena los resultados presentando únicamente empleados con coincidencia mínima.
     
 <h3>Cobertura de Vacantes</h3>
-
-<img width="1040" height="824" alt="Imagen10" src="https://github.com/user-attachments/assets/7e3c5fbd-d1ad-4ce3-9dc0-33dac247f68f" />
+<img width="644" height="440" alt="4" src="https://github.com/user-attachments/assets/e3c90cf9-ab7a-468e-bd04-3277648a945c" />
 
 
 
@@ -89,8 +84,7 @@ seguimiento del proceso.
 
 
 <h3>Cumplimiento del Proceso Laboral</h3>
-
-<img width="637" height="408" alt="Imagen11" src="https://github.com/user-attachments/assets/0f2b82ea-e0d7-463d-a1e0-1f9bfb6449d4" />
+<img width="627" height="310" alt="2" src="https://github.com/user-attachments/assets/4696f7c1-a8f0-4a2d-91ed-b14060539464" />
 
 **Explicación:**
 Este diagrama detalla el proceso de validación y formalización de contrataciones exitosas.
@@ -103,7 +97,7 @@ El flujo incluye:
   - El empleado pasa a estado "Contratado", se calculan las comisiones y las partes reciben notificación formal de confirmación.
 
 <h3>Monetización y Analítica de Resultados</h3>
-<img width="1343" height="825" alt="image" src="https://github.com/user-attachments/assets/dbccd465-6809-425d-a913-ab0be49de6e2" />
+<img width="1313" height="828" alt="1" src="https://github.com/user-attachments/assets/b1472a2c-d615-4641-a49d-02cee5fdc37d" />
 
 **Explicación:**
 Este diagrama representa el proceso de cálculo de comisiones y generación de análisis del sistema.
